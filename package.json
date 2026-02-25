@@ -1,0 +1,79 @@
+{
+  "name": "auto-architect",
+  "version": "2.0.1",
+  "description": "Professional software architecture optimization system with multi-language support, security analysis, and real-time monitoring",
+  "main": "dist/index.js",
+  "bin": {
+    "auto-architect": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli/index.js",
+    "dev": "ts-node src/cli/index.ts",
+    "analyze": "node dist/cli/index.js analyze",
+    "analyze:example": "node dist/cli/index.js analyze example-project",
+    "analyze:self": "node dist/cli/index.js analyze src --threshold 0",
+    "analyze:python": "node dist/cli/index.js analyze example-python",
+    "analyze:security": "node dist/cli/index.js analyze --security",
+    "analyze:trends": "node dist/cli/index.js analyze --compare report.json",
+    "analyze:json": "node dist/cli/index.js analyze --format json --output report.json",
+    "analyze:md": "node dist/cli/index.js analyze --format markdown --output report.md",
+    "analyze:html": "node dist/cli/index.js analyze --format html --output report.html",
+    "diagram": "node dist/cli/index.js analyze --diagram mermaid",
+    "watch": "node dist/cli/index.js watch",
+    "watch:threshold": "node dist/cli/index.js watch --threshold 80",
+    "clean": "rimraf dist",
+    "rebuild": "npm run clean && npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "architecture",
+    "refactoring",
+    "analysis",
+    "optimization",
+    "code-quality",
+    "metrics",
+    "anti-patterns",
+    "technical-debt",
+    "maintainability",
+    "complexity",
+    "coupling",
+    "cohesion",
+    "dependency-graph",
+    "static-analysis",
+    "code-smells",
+    "health-score",
+    "quality-gates",
+    "cli",
+    "typescript",
+    "javascript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/auto-architect"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/auto-architect/issues"
+  },
+  "homepage": "https://github.com/yourusername/auto-architect#readme",
+  "dependencies": {
+    "@typescript-eslint/parser": "^6.0.0",
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2",
+    "graphology": "^0.25.0",
+    "graphology-communities-louvain": "^2.0.0",
+    "graphology-metrics": "^2.0.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "rimraf": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
