@@ -40,7 +40,7 @@ export class ArchitectureAnalyzer {
     // Optional security analysis
     if (options.includeSecurity) {
       console.log('🔒 Detecting security vulnerabilities...');
-      const securityIssues = this.securityDetector.detectVulnerabilities(graph.modules);
+      const securityIssues = this.securityDetector.detectVulnerabilities(graph.modules, projectPath);
       allIssues = [...allIssues, ...securityIssues];
     }
     

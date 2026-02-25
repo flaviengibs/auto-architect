@@ -1,6 +1,6 @@
 {
   "name": "auto-architect",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Professional software architecture optimization system with multi-language support, security analysis, and real-time monitoring",
   "main": "dist/index.js",
   "bin": {

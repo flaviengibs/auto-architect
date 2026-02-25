@@ -2,6 +2,61 @@
 
 All notable changes to Auto-Architect will be documented in this file.
 
+## [2.3.0] - 2026-02-25
+
+### Enhanced refactoring proposals and expanded security detection
+
+#### More accurate refactoring proposals
+- Proposals now use actual metrics for impact calculation
+- Module size and dependency count factored into effort estimation
+- More detailed steps with specific numbers (e.g., "Update 15 dependent modules")
+- Risk level calculation based on affected modules count
+- Priority assignment considers multiple factors (size, dependencies, dependents)
+- Added 4 new metric-based proposals:
+  - Consolidate code duplication (when >10% duplication detected)
+  - Flatten dependency chains (when depth >7 levels)
+  - Improve class cohesion (when LCOM >3)
+  - Reduce coupling (when coupling >30%)
+- Increased proposal limit from 10 to 15 for better coverage
+- More accurate effort hour estimates based on codebase size
+
+#### Significantly expanded security detection
+- Added 12 new security vulnerability checks (18 total):
+  1. **Insecure deserialization**: JSON.parse, pickle, YAML unsafe loading
+  2. **Weak cryptography**: MD5, SHA1, DES, RC4, ECB mode detection
+  3. **Insecure HTTP**: Unencrypted connections for sensitive data
+  4. **Open redirect**: Unvalidated redirect URLs
+  5. **XXE (XML External Entity)**: XML parser vulnerabilities
+  6. **LDAP injection**: Unsafe LDAP query construction
+  7. **SSRF (Server-Side Request Forgery)**: Unvalidated external requests
+  8. **Insecure file upload**: Missing file type validation
+  9. **Missing authentication**: Routes without auth middleware
+  10. **Insecure CORS**: Wildcard origin configuration
+  11. **Prototype pollution**: Unsafe object merging
+  12. **ReDoS (Regex DOS)**: Catastrophic backtracking patterns
+
+#### Enhanced existing security checks
+- SQL injection: Added Python f-string detection
+- Command injection: Added Python subprocess shell=True detection
+- Hardcoded secrets: Expanded pattern matching for AWS keys, private keys
+- XSS: Added eval() detection
+- Path traversal: Improved user input detection patterns
+- All checks now provide specific remediation suggestions
+
+#### Technical improvements
+- Security detector now receives projectPath for accurate file reading
+- Better regex patterns for vulnerability detection
+- More context-aware security analysis
+- Improved false positive reduction
+- Enhanced error messages with specific fix suggestions
+
+#### Impact on analysis
+- More comprehensive security reports
+- Better prioritization of refactoring work
+- More actionable proposals with clear steps
+- Improved accuracy in effort and risk estimation
+- Better detection of production-ready issues
+
 ## [2.2.0] - 2026-02-25
 
 ### Enhanced evaluation accuracy and new analysis features

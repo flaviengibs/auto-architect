@@ -30,7 +30,7 @@ Professional automated software architecture optimization system. Analyzes your 
 - **Code smells**: Long parameter list, large class, lazy class, data clump
 - **Design**: Feature envy, shotgun surgery, inappropriate intimacy
 - **Maintenance**: Dead code, divergent change, message chains, middle man
-- **Security**: SQL injection, XSS, hardcoded secrets, command injection, path traversal
+- **Security**: 18 vulnerability types including SQL injection, XSS, hardcoded secrets, command injection, path traversal, insecure deserialization, weak cryptography, SSRF, XXE, LDAP injection, prototype pollution, ReDoS, and more
 
 ### Health score and quality gates
 - Overall score with A-F grade based on 5 dimensions
@@ -38,11 +38,14 @@ Professional automated software architecture optimization system. Analyzes your 
 - Includes new gates for dependency depth, duplication, and LCOM
 - Tracking of improvements and regressions
 
-### Refactoring proposals (10+ types)
-- Extract service, split module, break cycle
+### Refactoring proposals (14+ types)
+- Extract service, split module, break cycle, merge modules
 - Extract class, move method, inline class
 - Parameter object, extract interface
-- **With**: Priority, estimated impact, effort (hours), risk level, code examples
+- Consolidate duplicate code, flatten dependencies
+- Improve cohesion, reduce coupling
+- **With**: Priority, estimated impact, effort (hours), risk level, detailed steps, code examples
+- **Accuracy**: Uses actual metrics for impact calculation and effort estimation
 
 ### Multiple export formats
 - **Console**: Colored and formatted report
