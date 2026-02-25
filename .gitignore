@@ -42,3 +42,8 @@ example-project-final.json
 *.tmp
 *.temp
 .cache/
+
+
+# Useless files 
+.DOC/
+
