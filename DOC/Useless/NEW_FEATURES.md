@@ -52,8 +52,8 @@ node dist/cli/index.js analyze --security
 # Détecté comme SQL Injection
 query = "SELECT * FROM users WHERE id = " + user_id
 
-# Détecté comme Hardcoded Secret
-API_KEY = "sk_live_1234567890abcdefghijklmnop"
+# Détecté comme Hardcoded Secret (example only)
+API_KEY = "sk_live_EXAMPLE_NOT_REAL_KEY_12345"
 
 # Détecté comme Command Injection
 subprocess.run(f"ls {cmd}", shell=True)

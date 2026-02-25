@@ -4,9 +4,9 @@ import subprocess
 from database import execute_query
 from utils import process_data
 
-# Security issue: Hardcoded secret
-API_KEY = "sk_live_1234567890abcdefghijklmnop"
-PASSWORD = "admin123"
+# Security issue: Hardcoded secret (example only - not a real key)
+API_KEY = "sk_live_EXAMPLE_NOT_REAL_KEY_12345"
+PASSWORD = "example_password_not_real"
 
 def get_user_data(user_id):
     """Fetch user data - SQL injection vulnerability."""
