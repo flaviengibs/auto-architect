@@ -2,6 +2,157 @@
 
 All notable changes to Auto-Architect will be documented in this file.
 
+## [3.1.1] - 2026-02-25
+
+### Code quality improvements
+
+#### Test suite implementation
+- Added Jest testing framework with TypeScript support
+- Created 35 comprehensive tests across 3 test suites:
+  - BaseParser tests (17 tests) - Core parser functionality
+  - MetricsAnalyzer tests (8 tests) - Metrics calculation
+  - HealthScorer tests (10 tests) - Health scoring logic
+- All tests passing with 100% success rate
+- Test coverage: ~15% of codebase (core components)
+- Added npm scripts: `test`, `test:watch`, `test:coverage`
+
+#### Code duplication reduction
+- Created BaseParser abstract class to reduce duplication
+- Extracted common parser functionality:
+  - Module name extraction
+  - Test file detection
+  - Complexity calculation
+  - Parameter counting
+  - Function/class info creation
+  - Import/export extraction
+- Provides foundation for all 18 language parsers
+- Reduces code duplication and improves maintainability
+
+#### Security fixes
+- Removed hardcoded secrets from example files
+- Fixed command injection vulnerability in Python example
+- Added .env.example for environment variable documentation
+- Updated .gitignore for generated files and secrets
+
+#### Documentation
+- Created TEST_SUMMARY.md with test coverage details
+- Created IMPROVEMENTS.md explaining changes
+- Updated .gitignore with all generated file patterns
+
+#### Impact
+- Health score: 27 → 28 (+1)
+- Critical issues: 6 → 0 (-100%)
+- Test coverage: 0% → 15%
+- Code organization improved
+- Security vulnerabilities fixed
+
+## [3.1.0] - 2026-02-25
+
+### New features: Performance, Git, Documentation, and Visualization
+
+#### Feature 1: Performance analyzer
+- Detects performance bottlenecks and inefficiencies
+- Identifies 6 types of performance issues:
+  - Nested loops (O(n²) or worse complexity)
+  - Recursive calls without memoization
+  - Large array operations (concat, splice in loops)
+  - Synchronous I/O operations
+  - Memory leak risks (uncleaned intervals, event listeners)
+  - Inefficient regex patterns (catastrophic backtracking)
+- Performance score calculation (0-100)
+- Hotspot identification for modules with most issues
+- Severity levels: critical, high, medium, low
+- Estimated impact and optimization suggestions
+- Use with `--performance` flag
+
+#### Feature 2: Git history analyzer
+- Analyzes Git repository history and metrics
+- Provides insights on:
+  - Total commits and contributors
+  - Code churn rate (additions/deletions)
+  - Hot files (most frequently changed)
+  - Bus factor (knowledge concentration risk)
+  - Commit frequency (daily, weekly, monthly)
+  - Author statistics (commits, lines changed, files)
+  - High churn files identification
+- Helps identify maintenance risks and knowledge silos
+- Use with `--git` flag
+
+#### Feature 3: Documentation generator
+- Auto-generates comprehensive project documentation
+- Supports Markdown and HTML formats
+- Includes:
+  - Module overview with dependencies
+  - Class documentation (methods, properties, inheritance)
+  - Function documentation (parameters, complexity, async)
+  - Exports listing
+  - Dependency graph visualization (Mermaid)
+  - Table of contents with navigation
+- Configurable options (include private, include tests)
+- Saves to ARCHITECTURE.md by default
+- Use with `--docs` flag
+
+#### Feature 4: Complexity heatmap generator
+- Visual representation of code complexity
+- Interactive HTML heatmap with:
+  - Color-coded risk levels (low/medium/high/critical)
+  - Module complexity scores
+  - Size and dependency information
+  - Hover tooltips with details
+  - Responsive grid layout
+  - Dark theme design
+- Risk calculation based on:
+  - Cyclomatic complexity
+  - Module size
+  - Dependency count
+- Also generates SVG format
+- Saves to complexity-heatmap.html
+- Use with `--heatmap` flag
+
+#### CLI enhancements
+- New flags:
+  - `--performance`: Enable performance analysis
+  - `--git`: Enable Git history analysis
+  - `--docs`: Generate documentation
+  - `--heatmap`: Generate complexity heatmap
+- All features can be combined in single analysis
+- Configuration file support for all new options
+
+#### Technical implementation
+- Created PerformanceAnalyzer class (src/analyzer/performance-analyzer.ts)
+- Created GitAnalyzer class (src/analyzer/git-analyzer.ts)
+- Created DocumentationGenerator class (src/generator/documentation-generator.ts)
+- Created HeatmapGenerator class (src/visualizer/heatmap-generator.ts)
+- Updated types.ts with new interfaces
+- Updated CLI with new options
+- Integrated all analyzers into main workflow
+
+#### Usage examples
+```bash
+# Full analysis with all features
+auto-architect analyze --performance --git --docs --heatmap
+
+# Performance analysis only
+auto-architect analyze --performance --verbose
+
+# Generate documentation
+auto-architect analyze --docs
+
+# Create complexity heatmap
+auto-architect analyze --heatmap
+
+# Combined with existing features
+auto-architect analyze --security --performance --git --format json
+```
+
+#### Impact
+- More comprehensive code quality insights
+- Better identification of technical debt
+- Automated documentation generation
+- Visual complexity analysis
+- Git history insights for team management
+- Performance optimization guidance
+
 ## [3.0.0] - 2026-02-25
 
 ### Major release: 12 new language parsers

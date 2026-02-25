@@ -166,6 +166,8 @@ export interface AnalysisReport {
   healthScore: HealthScore;
   qualityGates: QualityGate[];
   trends?: TrendAnalysis;
+  performance?: any;
+  git?: any;
 }
 
 export interface HealthScore {

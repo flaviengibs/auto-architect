@@ -1,6 +1,6 @@
 {
   "name": "auto-architect",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "description": "Professional software architecture optimization system with multi-language support, security analysis, and real-time monitoring",
   "main": "dist/index.js",
   "bin": {
@@ -10,6 +10,9 @@
     "build": "tsc",
     "start": "node dist/cli/index.js",
     "dev": "ts-node src/cli/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "analyze": "node dist/cli/index.js analyze",
     "analyze:example": "node dist/cli/index.js analyze example-project",
     "analyze:self": "node dist/cli/index.js analyze src --threshold 0",
@@ -60,17 +63,20 @@
   "homepage": "https://github.com/flaviengibs/auto-architect#readme",
   "dependencies": {
     "@typescript-eslint/parser": "^6.0.0",
-    "commander": "^11.0.0",
     "chalk": "^4.1.2",
+    "commander": "^11.0.0",
     "graphology": "^0.25.0",
     "graphology-communities-louvain": "^2.0.0",
     "graphology-metrics": "^2.0.0",
     "typescript": "^5.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
-    "ts-node": "^10.9.0",
-    "rimraf": "^5.0.0"
+    "jest": "^30.2.0",
+    "rimraf": "^5.0.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.0"
   },
   "engines": {
     "node": ">=16.0.0",

@@ -37,6 +37,11 @@ report.html
 self-analysis.json
 python-complete-report.json
 example-project-final.json
+ARCHITECTURE.md
+complexity-heatmap.html
+architecture.mermaid
+architecture.dot
+*.csv
 
 # Temporary files
 *.tmp
@@ -45,6 +50,7 @@ example-project-final.json
 
 # Configuration (user-specific)
 .autoarchitect.json
+.env
 
 # Useless files 
 DOC/

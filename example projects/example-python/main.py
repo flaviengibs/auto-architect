@@ -4,9 +4,9 @@ import subprocess
 from database import execute_query
 from utils import process_data
 
-# Security issue: Hardcoded secret (example only - not a real key)
-API_KEY = "sk_live_EXAMPLE_NOT_REAL_KEY_12345"
-PASSWORD = "example_password_not_real"
+# Use environment variables for secrets
+API_KEY = os.getenv("API_KEY", "")
+PASSWORD = os.getenv("PASSWORD", "")
 
 def get_user_data(user_id):
     """Fetch user data - SQL injection vulnerability."""
@@ -27,9 +27,9 @@ def read_file(filename):
         return f.read()
 
 def execute_command(cmd):
-    """Execute system command - Command injection."""
-    # Command injection vulnerability
-    result = subprocess.run(f"ls {cmd}", shell=True, capture_output=True)
+    """Execute system command - Fixed: use array instead of shell."""
+    # Fixed: avoid shell=True, use argument array
+    result = subprocess.run(["ls", cmd], capture_output=True)
     return result.stdout
 
 def generate_token():

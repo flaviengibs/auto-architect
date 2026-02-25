@@ -26,6 +26,10 @@ program
   .option('--fail-on-critical', 'Exit with error if critical issues found')
   .option('--compare <file>', 'Compare with previous report for trends')
   .option('--security', 'Include security vulnerability detection')
+  .option('--performance', 'Include performance analysis')
+  .option('--git', 'Include Git history analysis')
+  .option('--docs', 'Generate documentation')
+  .option('--heatmap', 'Generate complexity heatmap')
   .option('--verbose', 'Show detailed analysis output with debug information')
   .option('--quiet', 'Only show critical issues and final score')
   .option('--summary', 'Show only summary without detailed breakdowns')
@@ -53,6 +57,10 @@ program
       // Merge CLI options with config file (CLI takes precedence)
       const analysisOptions = {
         includeSecurity: options.security ?? config.security ?? false,
+        includePerformance: options.performance ?? config.performance ?? false,
+        includeGit: options.git ?? config.git ?? false,
+        generateDocs: options.docs ?? config.docs ?? false,
+        generateHeatmap: options.heatmap ?? config.heatmap ?? false,
         compareWith: options.compare ?? config.compareWith,
         includePattern: options.include ?? config.include,
         excludePattern: options.exclude ?? config.exclude,
@@ -68,6 +76,10 @@ program
         if (options.verbose) {
           console.log(chalk.gray('Analysis options:'));
           console.log(chalk.gray(`  - Security scan: ${analysisOptions.includeSecurity}`));
+          console.log(chalk.gray(`  - Performance analysis: ${analysisOptions.includePerformance}`));
+          console.log(chalk.gray(`  - Git analysis: ${analysisOptions.includeGit}`));
+          console.log(chalk.gray(`  - Generate docs: ${analysisOptions.generateDocs}`));
+          console.log(chalk.gray(`  - Generate heatmap: ${analysisOptions.generateHeatmap}`));
           console.log(chalk.gray(`  - Include pattern: ${analysisOptions.includePattern || 'all files'}`));
           console.log(chalk.gray(`  - Exclude pattern: ${analysisOptions.excludePattern || 'none'}`));
           console.log(chalk.gray(`  - Threshold: ${analysisOptions.threshold}\n`));
@@ -76,6 +88,65 @@ program
 
       const analyzer = new ArchitectureAnalyzer();
       const report = await analyzer.analyze(fullPath, analysisOptions);
+
+      // Performance analysis
+      if (analysisOptions.includePerformance && !options.quiet) {
+        const { PerformanceAnalyzer } = await import('../analyzer/performance-analyzer');
+        const perfAnalyzer = new PerformanceAnalyzer();
+        const perfMetrics = perfAnalyzer.analyze(report.graph, fullPath);
+        report.performance = perfMetrics;
+        
+        console.log(chalk.cyan('\n⚡ Performance analysis\n'));
+        console.log(`Score: ${perfMetrics.score}/100`);
+        console.log(`Total issues: ${perfMetrics.totalIssues} (Critical: ${perfMetrics.criticalIssues}, High: ${perfMetrics.highIssues})`);
+        if (perfMetrics.hotspots.length > 0) {
+          console.log(`Hotspots: ${perfMetrics.hotspots.slice(0, 3).join(', ')}`);
+        }
+      }
+
+      // Git analysis
+      if (analysisOptions.includeGit && !options.quiet) {
+        const { GitAnalyzer } = await import('../analyzer/git-analyzer');
+        const gitAnalyzer = new GitAnalyzer(fullPath);
+        const gitMetrics = gitAnalyzer.analyze();
+        
+        if (gitMetrics) {
+          report.git = gitMetrics;
+          console.log(chalk.cyan('\n📊 Git analysis\n'));
+          console.log(`Total commits: ${gitMetrics.totalCommits}`);
+          console.log(`Contributors: ${gitMetrics.contributors}`);
+          console.log(`Bus factor: ${gitMetrics.busFactor}`);
+          console.log(`Code churn rate: ${gitMetrics.codeChurn.churnRate.toLocaleString()} lines`);
+          if (gitMetrics.hotFiles.length > 0) {
+            console.log(`Most changed file: ${gitMetrics.hotFiles[0].path} (${gitMetrics.hotFiles[0].commits} commits)`);
+          }
+        }
+      }
+
+      // Generate documentation
+      if (analysisOptions.generateDocs) {
+        const { DocumentationGenerator } = await import('../generator/documentation-generator');
+        const docGen = new DocumentationGenerator();
+        const docs = docGen.generate(report.graph, { format: 'markdown' });
+        const docsPath = 'ARCHITECTURE.md';
+        docGen.saveToFile(docs, docsPath);
+        if (!options.quiet) {
+          console.log(chalk.green(`\n✓ Documentation saved to ${docsPath}`));
+        }
+      }
+
+      // Generate heatmap
+      if (analysisOptions.generateHeatmap) {
+        const { HeatmapGenerator } = await import('../visualizer/heatmap-generator');
+        const heatmapGen = new HeatmapGenerator();
+        const heatmapData = heatmapGen.generate(report.graph);
+        const heatmapHTML = heatmapGen.generateHTML(heatmapData);
+        const heatmapPath = 'complexity-heatmap.html';
+        heatmapGen.saveToFile(heatmapHTML, heatmapPath);
+        if (!options.quiet) {
+          console.log(chalk.green(`\n✓ Heatmap saved to ${heatmapPath}`));
+        }
+      }
 
       const reporter = new Reporter();
       

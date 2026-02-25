@@ -16,6 +16,36 @@ Professional automated software architecture optimization system. Analyzes your 
 - Test detection - Automatic test file identification
 - Watch mode - Real-time analysis on file changes
 
+### Performance analysis
+- Detects performance bottlenecks and inefficiencies
+- Identifies nested loops, recursive calls, synchronous I/O
+- Memory leak risk detection
+- Inefficient regex pattern detection
+- Performance score and hotspot identification
+- Optimization suggestions with estimated impact
+
+### Git integration
+- Repository history analysis
+- Code churn metrics and hot files
+- Bus factor calculation (knowledge concentration)
+- Commit frequency analysis
+- Author statistics and contributions
+- Maintenance risk identification
+
+### Documentation generation
+- Auto-generate comprehensive project documentation
+- Markdown and HTML formats
+- Module, class, and function documentation
+- Dependency graph visualization
+- Configurable output options
+
+### Complexity visualization
+- Interactive complexity heatmap
+- Color-coded risk levels
+- Visual module analysis
+- HTML and SVG formats
+- Responsive design with tooltips
+
 ### Architecture metrics (30+)
 - **Basic**: Modules, lines, dependencies, cyclomatic complexity
 - **Quality**: Coupling, cohesion, modularity, maintainability index
@@ -117,6 +147,12 @@ node dist/cli/index.js analyze --format markdown --output report.md
 node dist/cli/index.js analyze --format html --output report.html
 node dist/cli/index.js analyze --format csv --output metrics.csv
 
+# New features
+node dist/cli/index.js analyze --performance      # Performance analysis
+node dist/cli/index.js analyze --git              # Git history analysis
+node dist/cli/index.js analyze --docs             # Generate documentation
+node dist/cli/index.js analyze --heatmap          # Complexity heatmap
+
 # Security and trends
 node dist/cli/index.js analyze --security
 node dist/cli/index.js analyze --compare report-old.json
@@ -132,6 +168,10 @@ node dist/cli/index.js analyze --fail-on-critical
 # Combine multiple options
 node dist/cli/index.js analyze \
   --security \
+  --performance \
+  --git \
+  --docs \
+  --heatmap \
   --compare previous-report.json \
   --format html \
   --output report.html \
