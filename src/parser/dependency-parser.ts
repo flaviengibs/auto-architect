@@ -6,6 +6,18 @@ import { JavaParser } from './java-parser';
 import { PythonParser } from './python-parser';
 import { GoParser } from './go-parser';
 import { CSharpParser } from './csharp-parser';
+import { PHPParser } from './php-parser';
+import { RubyParser } from './ruby-parser';
+import { RustParser } from './rust-parser';
+import { KotlinParser } from './kotlin-parser';
+import { SwiftParser } from './swift-parser';
+import { CParser } from './c-parser';
+import { CppParser } from './cpp-parser';
+import { HTMLParser } from './html-parser';
+import { VBParser } from './vb-parser';
+import { RParser } from './r-parser';
+import { SQLParser } from './sql-parser';
+import { PascalParser } from './pascal-parser';
 
 export class DependencyParser {
   private modules: Map<string, Module> = new Map();
@@ -15,6 +27,18 @@ export class DependencyParser {
   private pythonParser = new PythonParser();
   private goParser = new GoParser();
   private csharpParser = new CSharpParser();
+  private phpParser = new PHPParser();
+  private rubyParser = new RubyParser();
+  private rustParser = new RustParser();
+  private kotlinParser = new KotlinParser();
+  private swiftParser = new SwiftParser();
+  private cParser = new CParser();
+  private cppParser = new CppParser();
+  private htmlParser = new HTMLParser();
+  private vbParser = new VBParser();
+  private rParser = new RParser();
+  private sqlParser = new SQLParser();
+  private pascalParser = new PascalParser();
 
   async parseProject(projectPath: string): Promise<DependencyGraph> {
     await this.scanDirectory(projectPath, projectPath);
@@ -51,6 +75,42 @@ export class DependencyParser {
       moduleData = this.goParser.parseFile(filePath, content, rootPath);
     } else if (ext === '.cs') {
       moduleData = this.csharpParser.parseFile(filePath, content, rootPath);
+    } else if (ext === '.php') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.phpParser.parse(relativePath, content);
+    } else if (ext === '.rb') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.rubyParser.parse(relativePath, content);
+    } else if (ext === '.rs') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.rustParser.parse(relativePath, content);
+    } else if (ext === '.kt' || ext === '.kts') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.kotlinParser.parse(relativePath, content);
+    } else if (ext === '.swift') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.swiftParser.parse(relativePath, content);
+    } else if (ext === '.c' || ext === '.h') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.cParser.parse(relativePath, content);
+    } else if (['.cpp', '.cc', '.cxx', '.hpp'].includes(ext)) {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.cppParser.parse(relativePath, content);
+    } else if (ext === '.html' || ext === '.htm') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.htmlParser.parse(relativePath, content);
+    } else if (ext === '.vb') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.vbParser.parse(relativePath, content);
+    } else if (ext === '.R') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.rParser.parse(relativePath, content);
+    } else if (ext === '.sql') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.sqlParser.parse(relativePath, content);
+    } else if (ext === '.pas' || ext === '.pp') {
+      const relativePath = path.relative(rootPath, filePath);
+      moduleData = this.pascalParser.parse(relativePath, content);
     } else {
       // TypeScript/JavaScript
       const relativePath = path.relative(rootPath, filePath);
@@ -215,7 +275,7 @@ export class DependencyParser {
   }
 
   private isSourceFile(filename: string): boolean {
-    return /\.(ts|js|tsx|jsx|java|py|go|cs)$/.test(filename);
+    return /\.(ts|js|tsx|jsx|java|py|go|cs|php|rb|rs|kt|kts|swift|c|cpp|cc|cxx|h|hpp|html?|vb|R|sql|pas|pp)$/.test(filename);
   }
 
   private shouldSkip(dirname: string): boolean {

@@ -2,6 +2,153 @@
 
 All notable changes to Auto-Architect will be documented in this file.
 
+## [3.0.0] - 2026-02-25
+
+### Major release: 12 new language parsers
+
+#### New language support (18 languages total)
+Added support for 12 additional programming languages across multiple paradigms:
+
+1. **PHP** (.php)
+   - Function and class extraction
+   - Use statement and require/include detection
+   - Public/private visibility parsing
+   - Namespace support
+   - Test file detection (tests/ directory)
+
+2. **Ruby** (.rb)
+   - Method and class extraction
+   - require and require_relative detection
+   - Module and class inheritance
+   - Instance variable detection
+   - Test file detection (spec/, test/ directories)
+
+3. **Rust** (.rs)
+   - Function and struct extraction
+   - use and mod statement parsing
+   - impl block method counting
+   - Trait (interface) detection
+   - Async function support
+   - Test file detection
+
+4. **Kotlin** (.kt, .kts)
+   - Function and class extraction
+   - Import statement parsing
+   - Data class, object, and interface support
+   - Suspend function detection
+   - Visibility modifiers (public/private/internal)
+   - Test file detection
+
+5. **Swift** (.swift)
+   - Function and struct/class extraction
+   - Import statement parsing
+   - Protocol (interface) support
+   - Async function detection
+   - Access control (public/private/internal/fileprivate)
+   - Test file detection (Tests/ directory)
+
+6. **C** (.c, .h)
+   - Function extraction with parameter counting
+   - Struct and typedef detection
+   - Include directive parsing (#include)
+   - Header file support
+   - Pointer and array parameter detection
+   - Test file detection
+
+7. **C++** (.cpp, .cc, .cxx, .hpp)
+   - Function and method extraction
+   - Class and namespace detection
+   - Include and using directive parsing
+   - Template function support
+   - Public/private/protected visibility
+   - Test file detection
+
+8. **HTML** (.html, .htm)
+   - Script tag extraction (inline JavaScript)
+   - External script reference detection
+   - Link tag parsing (stylesheets, resources)
+   - Form and input element counting
+   - Semantic structure analysis
+   - Resource dependency tracking
+
+9. **Visual Basic** (.vb)
+   - Sub and function extraction
+   - Class and module detection
+   - Imports statement parsing
+   - Public/private visibility
+   - Property and event detection
+   - Test file detection
+
+10. **R** (.R)
+    - Function extraction with parameter counting
+    - Library and source statement parsing
+    - Assignment operator detection (<- and =)
+    - Vector and data frame operations
+    - Test file detection (testthat/)
+
+11. **SQL** (.sql)
+    - Stored procedure and function extraction
+    - Table and view creation detection
+    - Trigger extraction
+    - Database object dependency tracking
+    - DDL and DML statement counting
+    - Schema analysis
+
+12. **Pascal** (.pas, .pp)
+    - Procedure and function extraction
+    - Unit and uses clause parsing
+    - Type and record definitions
+    - Public/private interface sections
+    - Begin/end block counting
+    - Test file detection
+
+#### Complete language support list
+- TypeScript (.ts, .tsx)
+- JavaScript (.js, .jsx)
+- Python (.py)
+- Java (.java)
+- Go (.go)
+- C# (.cs)
+- PHP (.php)
+- Ruby (.rb)
+- Rust (.rs)
+- Kotlin (.kt, .kts)
+- Swift (.swift)
+- C (.c, .h) - NEW
+- C++ (.cpp, .cc, .cxx, .hpp) - NEW
+- HTML (.html, .htm) - NEW
+- Visual Basic (.vb) - NEW
+- R (.R) - NEW
+- SQL (.sql) - NEW
+- Pascal (.pas, .pp) - NEW
+
+#### Parser features for all new languages
+- Function/method/procedure extraction with parameter counting
+- Class/struct/module extraction with property and method counting
+- Import/dependency detection (include, using, imports, library, uses)
+- Export/public member identification
+- Complexity calculation
+- Test file detection
+- Async function support (where applicable)
+- Inheritance and interface implementation tracking
+- Language-specific features (templates, pointers, protocols, etc.)
+
+#### Technical implementation
+- Created 12 new parser classes (PHPParser, RubyParser, RustParser, KotlinParser, SwiftParser, CParser, CppParser, HTMLParser, VBParser, RParser, SQLParser, PascalParser)
+- Integrated all parsers into DependencyParser
+- Updated file extension detection for all new languages
+- Consistent API across all language parsers
+- Proper handling of language-specific features
+- Support for multiple file extensions per language
+
+#### Impact
+- Analyze projects in 18 different languages
+- Multi-language monorepo support
+- Comprehensive polyglot codebase analysis
+- Same metrics and analysis for all languages
+- Unified reporting across languages
+- Coverage of procedural, OOP, functional, and declarative paradigms
+
 ## [2.3.0] - 2026-02-25
 
 ### Enhanced refactoring proposals and expanded security detection
