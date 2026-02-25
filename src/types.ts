@@ -11,6 +11,8 @@ export interface Module {
   imports: ImportInfo[];
   hasTests: boolean;
   testCoverage?: number;
+  category?: 'core' | 'feature' | 'utility' | 'test' | 'config';
+  duplicationScore?: number;
 }
 
 export interface FunctionInfo {
@@ -69,6 +71,29 @@ export interface ArchitectureMetrics {
     bugs: number;
   };
   cognitiveComplexity?: number;
+  // New enhanced metrics
+  dependencyDepth?: {
+    average: number;
+    maximum: number;
+    deepestChain: string[];
+  };
+  duplication?: {
+    percentage: number;
+    duplicatedBlocks: number;
+    duplicatedLines: number;
+  };
+  moduleCategories?: {
+    core: number;
+    feature: number;
+    utility: number;
+    test: number;
+    config: number;
+  };
+  fanIn?: number;  // Average number of modules depending on each module
+  fanOut?: number; // Average number of modules each module depends on
+  lackOfCohesionMethods?: number; // LCOM metric
+  afferentCoupling?: number; // Ca - incoming dependencies
+  efferentCoupling?: number; // Ce - outgoing dependencies
 }
 
 export interface AntiPattern {

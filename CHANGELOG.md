@@ -2,6 +2,62 @@
 
 All notable changes to Auto-Architect will be documented in this file.
 
+## [2.2.0] - 2026-02-25
+
+### Enhanced evaluation accuracy and new analysis features
+
+#### Improved evaluation accuracy
+- Added 10+ new metrics for more comprehensive code quality assessment
+- Enhanced health scoring algorithm with additional parameters
+- More granular quality gates (now 10 gates instead of 7)
+- Improved architecture scoring with dependency depth and fan metrics
+- Enhanced maintainability scoring with duplication and cognitive complexity
+- Better coupling analysis with afferent and efferent metrics
+
+#### New feature 1: Dependency depth analysis
+- Calculates average and maximum dependency chain depth
+- Identifies deepest dependency chains in the codebase
+- Helps detect over-layered architectures
+- Quality gate for maximum depth (threshold: 8 levels)
+- Displayed in verbose mode with chain visualization
+
+#### New feature 2: Code duplication detection
+- Token-based duplication detection across files
+- Reports duplication percentage, blocks, and lines
+- Minimum block size of 6 lines for accuracy
+- Quality gate for duplication (threshold: 10%)
+- Helps identify refactoring opportunities
+
+#### New feature 3: Module categorization
+- Automatic classification of modules by role:
+  - Core: High centrality modules (many dependencies both ways)
+  - Feature: Business logic modules
+  - Utility: Reusable helper modules (high fan-in, low fan-out)
+  - Test: Test files and specs
+  - Config: Configuration files
+- Distribution analysis in reports
+- Helps understand architecture organization
+
+#### Additional metrics
+- Fan-in/fan-out: Average dependencies per module
+- LCOM (Lack of Cohesion of Methods): Class cohesion metric
+- Afferent coupling (Ca): Incoming dependencies
+- Efferent coupling (Ce): Outgoing dependencies
+- All metrics included in CSV export
+
+#### Enhanced reporting
+- New metrics displayed in console output
+- Verbose mode shows all enhanced metrics
+- CSV export includes all new measurements
+- Quality gates updated with new thresholds
+
+#### Technical improvements
+- Created EnhancedMetricsAnalyzer class
+- Updated HealthScorer with new evaluation parameters
+- Enhanced MetricsAnalyzer integration
+- Updated type definitions for new metrics
+- Improved accuracy of health score calculations
+
 ## [2.1.0] - 2026-02-25
 
 ### Enhanced CLI and output options

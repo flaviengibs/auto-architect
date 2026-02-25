@@ -23,7 +23,7 @@ export class HealthScorer {
   }
 
   generateQualityGates(metrics: ArchitectureMetrics, antiPatterns: AntiPattern[]): QualityGate[] {
-    return [
+    const gates: QualityGate[] = [
       {
         name: 'Cyclomatic Complexity',
         passed: metrics.cyclomaticComplexity < 15,
@@ -74,6 +74,39 @@ export class HealthScorer {
         severity: metrics.technicalDebt > 30 ? 'error' : 'warning'
       }
     ];
+
+    // NEW: Add quality gates for enhanced metrics
+    if (metrics.dependencyDepth) {
+      gates.push({
+        name: 'Dependency Depth',
+        passed: metrics.dependencyDepth.maximum < 8,
+        threshold: 8,
+        actual: metrics.dependencyDepth.maximum,
+        severity: metrics.dependencyDepth.maximum > 10 ? 'error' : 'warning'
+      });
+    }
+
+    if (metrics.duplication) {
+      gates.push({
+        name: 'Code Duplication',
+        passed: metrics.duplication.percentage < 10,
+        threshold: 10,
+        actual: metrics.duplication.percentage,
+        severity: metrics.duplication.percentage > 20 ? 'error' : 'warning'
+      });
+    }
+
+    if (metrics.lackOfCohesionMethods !== undefined) {
+      gates.push({
+        name: 'Lack of Cohesion (LCOM)',
+        passed: metrics.lackOfCohesionMethods < 3,
+        threshold: 3,
+        actual: metrics.lackOfCohesionMethods,
+        severity: metrics.lackOfCohesionMethods > 5 ? 'error' : 'warning'
+      });
+    }
+
+    return gates;
   }
 
   private scoreArchitecture(metrics: ArchitectureMetrics): number {
@@ -97,6 +130,38 @@ export class HealthScorer {
     if (metrics.distanceFromMainSequence < 0.2) score += 10;
     else if (metrics.distanceFromMainSequence > 0.5) score -= 20;
 
+    // NEW: Penalize deep dependency chains
+    if (metrics.dependencyDepth) {
+      if (metrics.dependencyDepth.maximum > 10) score -= 20;
+      else if (metrics.dependencyDepth.maximum > 7) score -= 10;
+      else if (metrics.dependencyDepth.maximum > 5) score -= 5;
+    }
+
+    // NEW: Penalize high fan-out (too many dependencies)
+    if (metrics.fanOut) {
+      if (metrics.fanOut > 10) score -= 15;
+      else if (metrics.fanOut > 7) score -= 10;
+      else if (metrics.fanOut > 5) score -= 5;
+    }
+
+    // NEW: Reward balanced module categories
+    if (metrics.moduleCategories) {
+      const total = metrics.totalModules;
+      const coreRatio = metrics.moduleCategories.core / total;
+      const utilityRatio = metrics.moduleCategories.utility / total;
+      
+      // Ideal: 20-40% core, 20-40% utility
+      if (coreRatio >= 0.2 && coreRatio <= 0.4) score += 5;
+      if (utilityRatio >= 0.2 && utilityRatio <= 0.4) score += 5;
+    }
+
+    // NEW: Penalize high LCOM (lack of cohesion in methods)
+    if (metrics.lackOfCohesionMethods) {
+      if (metrics.lackOfCohesionMethods > 5) score -= 15;
+      else if (metrics.lackOfCohesionMethods > 3) score -= 10;
+      else if (metrics.lackOfCohesionMethods > 2) score -= 5;
+    }
+
     return Math.max(0, Math.min(100, score));
   }
 
@@ -115,6 +180,26 @@ export class HealthScorer {
 
     // Adjust for code smells
     score -= Math.min(30, metrics.codeSmells * 2);
+
+    // NEW: Penalize code duplication
+    if (metrics.duplication) {
+      if (metrics.duplication.percentage > 20) score -= 25;
+      else if (metrics.duplication.percentage > 10) score -= 15;
+      else if (metrics.duplication.percentage > 5) score -= 10;
+    }
+
+    // NEW: Consider cognitive complexity
+    if (metrics.cognitiveComplexity) {
+      if (metrics.cognitiveComplexity > 25) score -= 20;
+      else if (metrics.cognitiveComplexity > 15) score -= 10;
+      else if (metrics.cognitiveComplexity > 10) score -= 5;
+    }
+
+    // NEW: Penalize high efferent coupling
+    if (metrics.efferentCoupling) {
+      if (metrics.efferentCoupling > 8) score -= 15;
+      else if (metrics.efferentCoupling > 5) score -= 10;
+    }
 
     return Math.max(0, Math.min(100, score));
   }

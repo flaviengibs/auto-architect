@@ -2,6 +2,7 @@ import { DependencyGraph, ArchitectureMetrics } from '../types';
 import { AdvancedMetricsCalculator } from './advanced-metrics';
 import { HalsteadAnalyzer } from './halstead-metrics';
 import { CognitiveComplexityAnalyzer } from './cognitive-complexity';
+import { EnhancedMetricsAnalyzer } from './enhanced-metrics';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -9,6 +10,7 @@ export class MetricsAnalyzer {
   private advancedCalculator = new AdvancedMetricsCalculator();
   private halsteadAnalyzer = new HalsteadAnalyzer();
   private cognitiveAnalyzer = new CognitiveComplexityAnalyzer();
+  private enhancedAnalyzer = new EnhancedMetricsAnalyzer();
 
   analyze(graph: DependencyGraph, projectPath?: string): ArchitectureMetrics {
     const modules = Array.from(graph.modules.values());
@@ -48,6 +50,14 @@ export class MetricsAnalyzer {
     const halsteadMetrics = projectPath ? this.calculateAverageHalstead(graph, projectPath) : null;
     const cognitiveComplexity = projectPath ? this.calculateAverageCognitiveComplexity(graph, projectPath) : null;
     
+    // Calculate enhanced metrics
+    const dependencyDepth = this.enhancedAnalyzer.calculateDependencyDepth(graph);
+    const duplication = projectPath ? this.enhancedAnalyzer.detectDuplication(graph, projectPath) : null;
+    const moduleCategories = this.enhancedAnalyzer.categorizeModules(graph);
+    const fanMetrics = this.enhancedAnalyzer.calculateFanMetrics(graph);
+    const lcom = this.enhancedAnalyzer.calculateLCOM(graph);
+    const couplingMetrics = this.enhancedAnalyzer.calculateCouplingMetrics(graph);
+    
     // Count code smells (will be updated by detector)
     const codeSmells = 0;
 
@@ -77,7 +87,15 @@ export class MetricsAnalyzer {
         time: Math.round(halsteadMetrics.time * 100) / 100,
         bugs: Math.round(halsteadMetrics.bugs * 1000) / 1000
       } : undefined,
-      cognitiveComplexity: cognitiveComplexity ? Math.round(cognitiveComplexity * 100) / 100 : undefined
+      cognitiveComplexity: cognitiveComplexity ? Math.round(cognitiveComplexity * 100) / 100 : undefined,
+      dependencyDepth,
+      duplication: duplication || undefined,
+      moduleCategories,
+      fanIn: fanMetrics.fanIn,
+      fanOut: fanMetrics.fanOut,
+      lackOfCohesionMethods: lcom,
+      afferentCoupling: couplingMetrics.afferent,
+      efferentCoupling: couplingMetrics.efferent
     };
   }
 

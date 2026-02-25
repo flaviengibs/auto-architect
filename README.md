@@ -11,12 +11,18 @@ Professional automated software architecture optimization system. Analyzes your 
 - Test detection - Automatic test file identification
 - Watch mode - Real-time analysis on file changes
 
-### Architecture metrics (22+)
+### Architecture metrics (30+)
 - **Basic**: Modules, lines, dependencies, cyclomatic complexity
 - **Quality**: Coupling, cohesion, modularity, maintainability index
 - **Advanced**: Instability, abstractness, distance from main sequence
 - **Halstead**: Vocabulary, volume, difficulty, effort, time, bugs
 - **Cognitive**: Cognitive complexity score
+- **Dependency**: Depth analysis, chain detection
+- **Duplication**: Code duplication percentage and detection
+- **Categorization**: Module role classification (core/feature/utility/test/config)
+- **Fan metrics**: Fan-in, fan-out analysis
+- **Cohesion**: LCOM (Lack of Cohesion of Methods)
+- **Coupling**: Afferent and efferent coupling metrics
 - **Health**: Test coverage, technical debt, code smells, hotspots
 
 ### Anti-pattern detection (23+)
@@ -28,7 +34,8 @@ Professional automated software architecture optimization system. Analyzes your 
 
 ### Health score and quality gates
 - Overall score with A-F grade based on 5 dimensions
-- 7 configurable quality gates with thresholds
+- 10 configurable quality gates with thresholds
+- Includes new gates for dependency depth, duplication, and LCOM
 - Tracking of improvements and regressions
 
 ### Refactoring proposals (10+ types)

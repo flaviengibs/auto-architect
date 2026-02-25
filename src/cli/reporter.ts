@@ -170,6 +170,42 @@ export class Reporter {
       console.log(`   Average score:          ${this.colorizeMetric(m.cognitiveComplexity, 20, 10)}`);
     }
     
+    if (m.dependencyDepth) {
+      console.log(chalk.underline('\nDependency depth:'));
+      console.log(`   Average depth:          ${chalk.white(m.dependencyDepth.average)}`);
+      console.log(`   Maximum depth:          ${this.colorizeMetric(m.dependencyDepth.maximum, 8, 5)}`);
+      if (verbose && m.dependencyDepth.deepestChain.length > 0) {
+        console.log(`   Deepest chain:          ${chalk.gray(m.dependencyDepth.deepestChain.slice(0, 3).join(' → '))}${m.dependencyDepth.deepestChain.length > 3 ? '...' : ''}`);
+      }
+    }
+    
+    if (m.duplication) {
+      console.log(chalk.underline('\nCode duplication:'));
+      console.log(`   Duplication rate:       ${this.colorizeMetric(m.duplication.percentage, 10, 5)}%`);
+      console.log(`   Duplicated blocks:      ${chalk.white(m.duplication.duplicatedBlocks)}`);
+      console.log(`   Duplicated lines:       ${chalk.white(m.duplication.duplicatedLines)}`);
+    }
+    
+    if (m.moduleCategories) {
+      console.log(chalk.underline('\nModule categories:'));
+      console.log(`   Core modules:           ${chalk.white(m.moduleCategories.core)}`);
+      console.log(`   Feature modules:        ${chalk.white(m.moduleCategories.feature)}`);
+      console.log(`   Utility modules:        ${chalk.white(m.moduleCategories.utility)}`);
+      console.log(`   Test modules:           ${chalk.white(m.moduleCategories.test)}`);
+      console.log(`   Config modules:         ${chalk.white(m.moduleCategories.config)}`);
+    }
+    
+    if (m.fanIn !== undefined || m.fanOut !== undefined) {
+      console.log(chalk.underline('\nFan metrics:'));
+      if (m.fanIn !== undefined) console.log(`   Average fan-in:         ${chalk.white(m.fanIn)}`);
+      if (m.fanOut !== undefined) console.log(`   Average fan-out:        ${this.colorizeMetric(m.fanOut, 8, 5)}`);
+    }
+    
+    if (m.lackOfCohesionMethods !== undefined) {
+      console.log(chalk.underline('\nCohesion metrics:'));
+      console.log(`   LCOM (avg):             ${this.colorizeMetric(m.lackOfCohesionMethods, 3, 2)}`);
+    }
+    
     if (m.hotspots.length > 0) {
       console.log(chalk.underline('\nHotspots (high complexity):'));
       const limit = verbose ? m.hotspots.length : 3;
@@ -522,6 +558,46 @@ export class Reporter {
     // Cognitive complexity
     if (report.metrics.cognitiveComplexity !== undefined) {
       csv += `Cognitive Complexity,${report.metrics.cognitiveComplexity}\n`;
+    }
+    
+    // Enhanced metrics
+    if (report.metrics.dependencyDepth) {
+      csv += `Dependency Depth Average,${report.metrics.dependencyDepth.average}\n`;
+      csv += `Dependency Depth Maximum,${report.metrics.dependencyDepth.maximum}\n`;
+    }
+    
+    if (report.metrics.duplication) {
+      csv += `Code Duplication Percentage,${report.metrics.duplication.percentage}\n`;
+      csv += `Duplicated Blocks,${report.metrics.duplication.duplicatedBlocks}\n`;
+      csv += `Duplicated Lines,${report.metrics.duplication.duplicatedLines}\n`;
+    }
+    
+    if (report.metrics.moduleCategories) {
+      csv += `Core Modules,${report.metrics.moduleCategories.core}\n`;
+      csv += `Feature Modules,${report.metrics.moduleCategories.feature}\n`;
+      csv += `Utility Modules,${report.metrics.moduleCategories.utility}\n`;
+      csv += `Test Modules,${report.metrics.moduleCategories.test}\n`;
+      csv += `Config Modules,${report.metrics.moduleCategories.config}\n`;
+    }
+    
+    if (report.metrics.fanIn !== undefined) {
+      csv += `Fan-In,${report.metrics.fanIn}\n`;
+    }
+    
+    if (report.metrics.fanOut !== undefined) {
+      csv += `Fan-Out,${report.metrics.fanOut}\n`;
+    }
+    
+    if (report.metrics.lackOfCohesionMethods !== undefined) {
+      csv += `LCOM,${report.metrics.lackOfCohesionMethods}\n`;
+    }
+    
+    if (report.metrics.afferentCoupling !== undefined) {
+      csv += `Afferent Coupling,${report.metrics.afferentCoupling}\n`;
+    }
+    
+    if (report.metrics.efferentCoupling !== undefined) {
+      csv += `Efferent Coupling,${report.metrics.efferentCoupling}\n`;
     }
     
     // Quality gates
