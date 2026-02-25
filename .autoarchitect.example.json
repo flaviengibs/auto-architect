@@ -1,0 +1,11 @@
+{
+  "threshold": 70,
+  "security": false,
+  "verbose": false,
+  "quiet": false,
+  "summary": false,
+  "include": "src/**/*.ts",
+  "exclude": "**/*.test.ts",
+  "format": "console",
+  "failOnCritical": false
+}

@@ -1,6 +1,6 @@
 {
   "name": "auto-architect",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Professional software architecture optimization system with multi-language support, security analysis, and real-time monitoring",
   "main": "dist/index.js",
   "bin": {
@@ -48,16 +48,16 @@
     "typescript",
     "javascript"
   ],
-  "author": "Your Name",
+  "author": "flaviengibs",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/auto-architect"
+    "url": "https://github.com/flaviengibs/auto-architect"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/auto-architect/issues"
+    "url": "https://github.com/flaviengibs/auto-architect/issues"
   },
-  "homepage": "https://github.com/yourusername/auto-architect#readme",
+  "homepage": "https://github.com/flaviengibs/auto-architect#readme",
   "dependencies": {
     "@typescript-eslint/parser": "^6.0.0",
     "commander": "^11.0.0",

@@ -2,6 +2,65 @@
 
 All notable changes to Auto-Architect will be documented in this file.
 
+## [2.1.0] - 2026-02-25
+
+### Enhanced CLI and output options
+
+#### New CLI flags
+- `--verbose`: detailed analysis output with debug information and extended lists
+- `--quiet`: minimal output showing only critical issues and final score
+- `--summary`: quick overview without detailed breakdowns
+- `--include <pattern>`: filter files to include using glob patterns
+- `--exclude <pattern>`: filter files to exclude using glob patterns
+- `--config <file>`: load analysis configuration from JSON file
+
+#### New output formats
+- CSV export format for metrics and statistics
+- Added to existing JSON, HTML, and Markdown formats
+- Use `--format csv` to export data for spreadsheet analysis
+
+#### Enhanced reporting
+- Verbose mode shows all issues, proposals, and hotspots
+- Verbose mode includes module size distribution analysis
+- Verbose mode displays dependency analysis details
+- Quiet mode only shows critical and high severity issues
+- Summary mode provides condensed overview of key metrics
+- All modes respect the new filtering options
+
+#### Configuration file support
+- JSON configuration file for persistent settings
+- CLI options override config file values
+- Supports all analysis options (security, thresholds, patterns)
+- Example: `auto-architect analyze --config .autoarchitect.json`
+
+#### Technical improvements
+- Updated reporter with printSummary() and printQuiet() methods
+- Added generateCSV() for metrics export
+- Enhanced printReport() with verbose parameter
+- Improved error handling with verbose stack traces
+- Better output control for CI/CD integration
+
+#### Usage examples
+```bash
+# Verbose analysis with all details
+auto-architect analyze --verbose
+
+# Quiet mode for CI/CD
+auto-architect analyze --quiet --threshold 80
+
+# Summary only
+auto-architect analyze --summary
+
+# Filter specific files
+auto-architect analyze --include "src/**/*.ts" --exclude "**/*.test.ts"
+
+# Export to CSV
+auto-architect analyze --format csv --output metrics.csv
+
+# Use config file
+auto-architect analyze --config .autoarchitect.json
+```
+
 ## [2.0.1] - 2026-02-25
 
 ### Complete integration release

@@ -21,11 +21,17 @@ program
   .argument('[path]', 'Project path to analyze', '.')
   .option('-o, --output <file>', 'Output report to file')
   .option('-d, --diagram <format>', 'Generate diagram (mermaid|dot)')
-  .option('-f, --format <type>', 'Output format (json|html|markdown)', 'console')
+  .option('-f, --format <type>', 'Output format (json|html|markdown|csv)', 'console')
   .option('--threshold <score>', 'Minimum health score threshold', '70')
   .option('--fail-on-critical', 'Exit with error if critical issues found')
   .option('--compare <file>', 'Compare with previous report for trends')
   .option('--security', 'Include security vulnerability detection')
+  .option('--verbose', 'Show detailed analysis output with debug information')
+  .option('--quiet', 'Only show critical issues and final score')
+  .option('--summary', 'Show only summary without detailed breakdowns')
+  .option('--include <pattern>', 'Include files matching pattern (glob)')
+  .option('--exclude <pattern>', 'Exclude files matching pattern (glob)')
+  .option('--config <file>', 'Load configuration from file')
   .action(async (projectPath: string, options) => {
     try {
       const fullPath = path.resolve(projectPath);
@@ -35,18 +41,46 @@ program
         process.exit(1);
       }
 
-      console.log(chalk.cyan(`\n🏗️  Analyzing architecture: ${fullPath}\n`));
+      // Load config file if provided
+      let config: any = {};
+      if (options.config && fs.existsSync(options.config)) {
+        config = JSON.parse(fs.readFileSync(options.config, 'utf-8'));
+        if (!options.quiet) {
+          console.log(chalk.cyan(`📋 Loaded configuration from ${options.config}`));
+        }
+      }
+
+      // Merge CLI options with config file (CLI takes precedence)
+      const analysisOptions = {
+        includeSecurity: options.security ?? config.security ?? false,
+        compareWith: options.compare ?? config.compareWith,
+        includePattern: options.include ?? config.include,
+        excludePattern: options.exclude ?? config.exclude,
+        verbose: options.verbose ?? config.verbose ?? false,
+        quiet: options.quiet ?? config.quiet ?? false,
+        summary: options.summary ?? config.summary ?? false,
+        threshold: options.threshold ? parseInt(options.threshold) : (config.threshold ?? 70)
+      };
+
+      if (!options.quiet) {
+        console.log(chalk.cyan(`\n🏗️  Analyzing architecture: ${fullPath}\n`));
+        
+        if (options.verbose) {
+          console.log(chalk.gray('Analysis options:'));
+          console.log(chalk.gray(`  - Security scan: ${analysisOptions.includeSecurity}`));
+          console.log(chalk.gray(`  - Include pattern: ${analysisOptions.includePattern || 'all files'}`));
+          console.log(chalk.gray(`  - Exclude pattern: ${analysisOptions.excludePattern || 'none'}`));
+          console.log(chalk.gray(`  - Threshold: ${analysisOptions.threshold}\n`));
+        }
+      }
 
       const analyzer = new ArchitectureAnalyzer();
-      const report = await analyzer.analyze(fullPath, {
-        includeSecurity: options.security,
-        compareWith: options.compare
-      });
+      const report = await analyzer.analyze(fullPath, analysisOptions);
 
       const reporter = new Reporter();
       
       // Show trends if available
-      if (report.trends) {
+      if (report.trends && !options.quiet) {
         const { TrendAnalyzer } = await import('../analyzer/trend-analyzer');
         const trendAnalyzer = new TrendAnalyzer();
         const trendReport = trendAnalyzer.generateTrendReport(report.trends);
@@ -54,7 +88,13 @@ program
       }
       
       if (options.format === 'console') {
-        reporter.printReport(report);
+        if (options.quiet) {
+          reporter.printQuiet(report);
+        } else if (options.summary) {
+          reporter.printSummary(report);
+        } else {
+          reporter.printReport(report, options.verbose);
+        }
       } else if (options.format === 'json') {
         console.log(JSON.stringify(report, null, 2));
       } else if (options.format === 'markdown') {
@@ -63,6 +103,9 @@ program
       } else if (options.format === 'html') {
         const html = reporter.generateHTML(report);
         console.log(html);
+      } else if (options.format === 'csv') {
+        const csv = reporter.generateCSV(report);
+        console.log(csv);
       }
 
       if (options.output) {
@@ -72,10 +115,14 @@ program
           ? reporter.generateMarkdown(report)
           : options.format === 'html'
           ? reporter.generateHTML(report)
+          : options.format === 'csv'
+          ? reporter.generateCSV(report)
           : JSON.stringify(report, null, 2);
         
         fs.writeFileSync(options.output, content);
-        console.log(chalk.green(`\n✓ Report saved to ${options.output}`));
+        if (!options.quiet) {
+          console.log(chalk.green(`\n✓ Report saved to ${options.output}`));
+        }
       }
 
       if (options.diagram) {
@@ -90,13 +137,17 @@ program
           fs.writeFileSync(diagramPath, diagram);
         }
         
-        console.log(chalk.green(`✓ Diagram saved to ${diagramPath}\n`));
+        if (!options.quiet) {
+          console.log(chalk.green(`✓ Diagram saved to ${diagramPath}\n`));
+        }
       }
 
       // Check thresholds
-      const threshold = parseInt(options.threshold);
+      const threshold = analysisOptions.threshold;
       if (report.healthScore.overall < threshold) {
-        console.log(chalk.red(`\n❌ Health score ${report.healthScore.overall} is below threshold ${threshold}`));
+        if (!options.quiet) {
+          console.log(chalk.red(`\n❌ Health score ${report.healthScore.overall} is below threshold ${threshold}`));
+        }
         process.exit(1);
       }
 
@@ -104,13 +155,18 @@ program
       if (options.failOnCritical) {
         const criticalIssues = report.antiPatterns.filter(p => p.severity === 'critical');
         if (criticalIssues.length > 0) {
-          console.log(chalk.red(`\n❌ Found ${criticalIssues.length} critical issues`));
+          if (!options.quiet) {
+            console.log(chalk.red(`\n❌ Found ${criticalIssues.length} critical issues`));
+          }
           process.exit(1);
         }
       }
 
     } catch (error) {
       console.error(chalk.red('\n❌ Analysis failed:'), error);
+      if (options.verbose) {
+        console.error(error);
+      }
       process.exit(1);
     }
   });

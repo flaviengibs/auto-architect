@@ -2,16 +2,117 @@ import { AnalysisReport } from '../types';
 import chalk from 'chalk';
 
 export class Reporter {
-  printReport(report: AnalysisReport): void {
+  printReport(report: AnalysisReport, verbose: boolean = false): void {
     console.log('\n' + chalk.bold.cyan('═══════════════════════════════════════════════════'));
-    console.log(chalk.bold.cyan('   AUTO-ARCHITECT ANALYSIS REPORT'));
+    console.log(chalk.bold.cyan('   Auto-architect analysis report'));
     console.log(chalk.bold.cyan('═══════════════════════════════════════════════════\n'));
 
     this.printHealthScore(report);
-    this.printMetrics(report);
+    this.printMetrics(report, verbose);
     this.printQualityGates(report);
-    this.printAntiPatterns(report);
-    this.printProposals(report);
+    this.printAntiPatterns(report, verbose);
+    this.printProposals(report, verbose);
+    
+    if (verbose) {
+      this.printVerboseDetails(report);
+    }
+  }
+
+  printSummary(report: AnalysisReport): void {
+    console.log('\n' + chalk.bold.cyan('═══════════════════════════════════════════════════'));
+    console.log(chalk.bold.cyan('   Analysis summary'));
+    console.log(chalk.bold.cyan('═══════════════════════════════════════════════════\n'));
+
+    const h = report.healthScore;
+    const gradeColor = this.getGradeColor(h.grade);
+    
+    console.log(chalk.bold.white('Health score\n'));
+    console.log(`   Overall: ${gradeColor(`${h.overall}/100 [${h.grade}]`)}\n`);
+    
+    const m = report.metrics;
+    console.log(chalk.bold.yellow('Key metrics\n'));
+    console.log(`   Modules: ${chalk.white(m.totalModules)} | Lines: ${chalk.white(m.totalLines.toLocaleString())} | Complexity: ${this.colorizeMetric(m.cyclomaticComplexity, 15, 10)}`);
+    console.log(`   Coupling: ${this.colorizeMetric(m.coupling, 30, 15)}% | Cohesion: ${chalk.green(m.cohesion)}% | MI: ${this.colorizeScore(m.maintainabilityIndex)}\n`);
+    
+    const passed = report.qualityGates.filter(g => g.passed).length;
+    const total = report.qualityGates.length;
+    console.log(chalk.bold.blue('Quality gates\n'));
+    console.log(`   ${passed}/${total} passed (${this.colorizeScore(Math.round((passed / total) * 100))}%)\n`);
+    
+    console.log(chalk.bold.red('Issues\n'));
+    const critical = report.antiPatterns.filter(p => p.severity === 'critical').length;
+    const high = report.antiPatterns.filter(p => p.severity === 'high').length;
+    const medium = report.antiPatterns.filter(p => p.severity === 'medium').length;
+    const low = report.antiPatterns.filter(p => p.severity === 'low').length;
+    
+    console.log(`   Critical: ${chalk.red(critical)} | High: ${chalk.red(high)} | Medium: ${chalk.yellow(medium)} | Low: ${chalk.green(low)}\n`);
+    
+    console.log(chalk.bold.green('Proposals\n'));
+    console.log(`   ${report.proposals.length} refactoring suggestions available\n`);
+  }
+
+  printQuiet(report: AnalysisReport): void {
+    const h = report.healthScore;
+    const gradeColor = this.getGradeColor(h.grade);
+    
+    console.log(`\nHealth score: ${gradeColor(`${h.overall}/100 [${h.grade}]`)}`);
+    
+    const critical = report.antiPatterns.filter(p => p.severity === 'critical');
+    if (critical.length > 0) {
+      console.log(chalk.red(`\n⚠️  ${critical.length} critical issue${critical.length > 1 ? 's' : ''}:`));
+      critical.forEach(issue => {
+        console.log(chalk.red(`   • ${issue.type} in ${issue.module}`));
+      });
+    }
+    
+    const high = report.antiPatterns.filter(p => p.severity === 'high');
+    if (high.length > 0) {
+      console.log(chalk.red(`\n⚠️  ${high.length} high severity issue${high.length > 1 ? 's' : ''}:`));
+      high.slice(0, 3).forEach(issue => {
+        console.log(chalk.red(`   • ${issue.type} in ${issue.module}`));
+      });
+      if (high.length > 3) {
+        console.log(chalk.gray(`   ... and ${high.length - 3} more`));
+      }
+    }
+    
+    if (critical.length === 0 && high.length === 0) {
+      console.log(chalk.green('\n✓ No critical or high severity issues detected'));
+    }
+    console.log();
+  }
+
+  private printVerboseDetails(report: AnalysisReport): void {
+    console.log(chalk.bold.magenta('🔍 Verbose details\n'));
+    
+    console.log(chalk.underline('Module size distribution:'));
+    const modulesArray = Array.from(report.graph.modules.values());
+    const moduleSizes = modulesArray.map(m => ({
+      name: m.path,
+      lines: m.size || 0
+    })).sort((a, b) => b.lines - a.lines);
+    
+    const totalLines = moduleSizes.reduce((sum, m) => sum + m.lines, 0);
+    const avgLines = totalLines / moduleSizes.length;
+    
+    console.log(`   Average module size: ${chalk.white(avgLines.toFixed(0))} lines`);
+    console.log(`   Largest module: ${chalk.white(moduleSizes[0]?.name)} (${moduleSizes[0]?.lines} lines)`);
+    console.log(`   Smallest module: ${chalk.white(moduleSizes[moduleSizes.length - 1]?.name)} (${moduleSizes[moduleSizes.length - 1]?.lines} lines)`);
+    
+    console.log(chalk.underline('\nDependency analysis:'));
+    const depCounts = modulesArray.map(m => m.dependencies.length);
+    const maxDeps = Math.max(...depCounts);
+    const avgDeps = depCounts.reduce((a, b) => a + b, 0) / depCounts.length;
+    
+    console.log(`   Average dependencies per module: ${chalk.white(avgDeps.toFixed(2))}`);
+    console.log(`   Maximum dependencies: ${this.colorizeMetric(maxDeps, 15, 10)}`);
+    
+    const isolated = modulesArray.filter(m => m.dependencies.length === 0 && m.dependents.length === 0);
+    if (isolated.length > 0) {
+      console.log(`   Isolated modules: ${chalk.yellow(isolated.length)}`);
+    }
+    
+    console.log();
   }
 
   private printHealthScore(report: AnalysisReport): void {
@@ -28,14 +129,14 @@ export class Reporter {
     console.log();
   }
 
-  private printMetrics(report: AnalysisReport): void {
+  private printMetrics(report: AnalysisReport, verbose: boolean = false): void {
     const m = report.metrics;
     
     console.log(chalk.bold.yellow('📊 Architecture metrics\n'));
     console.log(chalk.underline('Basic metrics:'));
     console.log(`   Total modules:          ${chalk.white(m.totalModules)}`);
     console.log(`   Total lines:            ${chalk.white(m.totalLines.toLocaleString())}`);
-    console.log(`   Avg dependencies:       ${chalk.white(m.avgDependencies)}`);
+    console.log(`   Average dependencies:   ${chalk.white(m.avgDependencies)}`);
     console.log(`   Max dependencies:       ${this.colorizeMetric(m.maxDependencies, 15, 10)}`);
     console.log(`   Cyclomatic complexity:  ${this.colorizeMetric(m.cyclomaticComplexity, 15, 10)}`);
     
@@ -71,7 +172,11 @@ export class Reporter {
     
     if (m.hotspots.length > 0) {
       console.log(chalk.underline('\nHotspots (high complexity):'));
-      m.hotspots.slice(0, 3).forEach(h => console.log(`   🔥 ${chalk.red(h)}`));
+      const limit = verbose ? m.hotspots.length : 3;
+      m.hotspots.slice(0, limit).forEach(h => console.log(`   🔥 ${chalk.red(h)}`));
+      if (!verbose && m.hotspots.length > 3) {
+        console.log(chalk.gray(`   ... and ${m.hotspots.length - 3} more`));
+      }
     }
     console.log();
   }
@@ -96,7 +201,7 @@ export class Reporter {
     console.log();
   }
 
-  private printAntiPatterns(report: AnalysisReport): void {
+  private printAntiPatterns(report: AnalysisReport, verbose: boolean = false): void {
     console.log(chalk.bold.red('🚨 Anti-patterns detected\n'));
 
     if (report.antiPatterns.length === 0) {
@@ -104,22 +209,26 @@ export class Reporter {
       return;
     }
 
-    report.antiPatterns.slice(0, 5).forEach((pattern, i) => {
+    const limit = verbose ? report.antiPatterns.length : 5;
+    report.antiPatterns.slice(0, limit).forEach((pattern) => {
       const icon = this.getSeverityIcon(pattern.severity);
       const color = this.getSeverityColor(pattern.severity);
       
-      console.log(`   ${icon} ${color(`[${pattern.severity.toUpperCase()}]`)} ${pattern.type}`);
+      console.log(`   ${icon} ${color(`[${pattern.severity}]`)} ${pattern.type}`);
       console.log(`      ${chalk.gray(pattern.description)}`);
       console.log(`      ${chalk.italic.gray('Impact:')} ${pattern.impact}`);
+      if (verbose && pattern.suggestion) {
+        console.log(`      ${chalk.italic.gray('Suggestion:')} ${pattern.suggestion}`);
+      }
       console.log();
     });
 
-    if (report.antiPatterns.length > 5) {
+    if (!verbose && report.antiPatterns.length > 5) {
       console.log(chalk.gray(`   ... and ${report.antiPatterns.length - 5} more\n`));
     }
   }
 
-  private printProposals(report: AnalysisReport): void {
+  private printProposals(report: AnalysisReport, verbose: boolean = false): void {
     console.log(chalk.bold.green('💡 Refactoring proposals\n'));
 
     if (report.proposals.length === 0) {
@@ -127,10 +236,11 @@ export class Reporter {
       return;
     }
 
-    report.proposals.slice(0, 5).forEach((proposal, i) => {
+    const limit = verbose ? report.proposals.length : 5;
+    report.proposals.slice(0, limit).forEach((proposal, i) => {
       const priorityColor = this.getPriorityColor(proposal.priority);
       
-      console.log(`   ${chalk.bold(`${i + 1}.`)} ${priorityColor(`[${proposal.priority.toUpperCase()}]`)} ${chalk.cyan(proposal.description)}`);
+      console.log(`   ${chalk.bold(`${i + 1}.`)} ${priorityColor(`[${proposal.priority}]`)} ${chalk.cyan(proposal.description)}`);
       console.log(`      ${chalk.gray('Type:')} ${proposal.type}`);
       console.log(`      ${chalk.gray('Target:')} ${proposal.target.join(', ')}`);
       console.log(`      ${chalk.gray('Estimated impact:')}`);
@@ -143,10 +253,17 @@ export class Reporter {
       if (proposal.affectedModules.length > 0) {
         console.log(`      ${chalk.gray('Affected:')} ${proposal.affectedModules.length} modules`);
       }
+      
+      if (verbose && proposal.steps && proposal.steps.length > 0) {
+        console.log(`      ${chalk.gray('Steps:')}`);
+        proposal.steps.slice(0, 3).forEach((step, idx) => {
+          console.log(`         ${idx + 1}. ${step}`);
+        });
+      }
       console.log();
     });
 
-    if (report.proposals.length > 5) {
+    if (!verbose && report.proposals.length > 5) {
       console.log(chalk.gray(`   ... and ${report.proposals.length - 5} more proposals\n`));
     }
   }
@@ -189,11 +306,11 @@ export class Reporter {
   }
 
   generateMarkdown(report: AnalysisReport): string {
-    let md = '# Architecture Analysis Report\n\n';
+    let md = '# Architecture analysis report\n\n';
     md += `**Project:** ${report.projectPath}\n`;
     md += `**Date:** ${new Date(report.timestamp).toLocaleString()}\n\n`;
     
-    md += `## Health Score: ${report.healthScore.overall}/100 [${report.healthScore.grade}]\n\n`;
+    md += `## Health score: ${report.healthScore.overall}/100 [${report.healthScore.grade}]\n\n`;
     md += `- Architecture: ${report.healthScore.architecture}/100\n`;
     md += `- Maintainability: ${report.healthScore.maintainability}/100\n`;
     md += `- Testability: ${report.healthScore.testability}/100\n`;
@@ -203,17 +320,17 @@ export class Reporter {
     md += '## Metrics\n\n';
     md += `| Metric | Value |\n`;
     md += `|--------|-------|\n`;
-    md += `| Total Modules | ${report.metrics.totalModules} |\n`;
-    md += `| Total Lines | ${report.metrics.totalLines.toLocaleString()} |\n`;
-    md += `| Avg Dependencies | ${report.metrics.avgDependencies} |\n`;
-    md += `| Cyclomatic Complexity | ${report.metrics.cyclomaticComplexity} |\n`;
+    md += `| Total modules | ${report.metrics.totalModules} |\n`;
+    md += `| Total lines | ${report.metrics.totalLines.toLocaleString()} |\n`;
+    md += `| Average dependencies | ${report.metrics.avgDependencies} |\n`;
+    md += `| Cyclomatic complexity | ${report.metrics.cyclomaticComplexity} |\n`;
     md += `| Coupling | ${report.metrics.coupling}% |\n`;
     md += `| Cohesion | ${report.metrics.cohesion}% |\n`;
-    md += `| Maintainability Index | ${report.metrics.maintainabilityIndex} |\n`;
-    md += `| Test Coverage | ${report.metrics.testCoverage}% |\n`;
-    md += `| Technical Debt | ${report.metrics.technicalDebt}% |\n\n`;
+    md += `| Maintainability index | ${report.metrics.maintainabilityIndex} |\n`;
+    md += `| Test coverage | ${report.metrics.testCoverage}% |\n`;
+    md += `| Technical debt | ${report.metrics.technicalDebt}% |\n\n`;
     
-    md += '## Quality Gates\n\n';
+    md += '## Quality gates\n\n';
     const passed = report.qualityGates.filter(g => g.passed).length;
     md += `**Status:** ${passed}/${report.qualityGates.length} gates passed\n\n`;
     report.qualityGates.forEach(gate => {
@@ -222,9 +339,9 @@ export class Reporter {
     });
     md += '\n';
     
-    md += '## Anti-Patterns & Code Smells\n\n';
+    md += '## Anti-patterns and code smells\n\n';
     if (report.antiPatterns.length === 0) {
-      md += 'No issues detected! 🎉\n\n';
+      md += 'No issues detected\n\n';
     } else {
       report.antiPatterns.slice(0, 10).forEach(pattern => {
         const emoji = { critical: '🔴', high: '🟠', medium: '🟡', low: '🟢' }[pattern.severity];
@@ -238,14 +355,14 @@ export class Reporter {
       });
     }
     
-    md += '## Top Refactoring Proposals\n\n';
+    md += '## Top refactoring proposals\n\n';
     report.proposals.slice(0, 5).forEach((proposal, i) => {
       md += `### ${i + 1}. ${proposal.description}\n\n`;
       md += `**Priority:** ${proposal.priority} | **Type:** ${proposal.type}\n\n`;
-      md += `**Estimated Impact:**\n`;
-      md += `- Complexity Reduction: ${proposal.estimatedImpact.complexityReduction}%\n`;
-      md += `- Coupling Reduction: ${proposal.estimatedImpact.couplingReduction}%\n`;
-      md += `- Maintainability Gain: ${proposal.estimatedImpact.maintainabilityGain}%\n`;
+      md += `**Estimated impact:**\n`;
+      md += `- Complexity reduction: ${proposal.estimatedImpact.complexityReduction}%\n`;
+      md += `- Coupling reduction: ${proposal.estimatedImpact.couplingReduction}%\n`;
+      md += `- Maintainability gain: ${proposal.estimatedImpact.maintainabilityGain}%\n`;
       md += `- Effort: ~${proposal.estimatedImpact.effortHours}h\n`;
       md += `- Risk: ${proposal.estimatedImpact.riskLevel}\n\n`;
       
@@ -265,7 +382,7 @@ export class Reporter {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Architecture Analysis Report</title>
+  <title>Architecture analysis report</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
     .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; }
@@ -287,13 +404,13 @@ export class Reporter {
 </head>
 <body>
   <div class="header">
-    <h1>🏗️ Architecture Analysis Report</h1>
+    <h1>Architecture analysis report</h1>
     <p><strong>Project:</strong> ${report.projectPath}</p>
     <p><strong>Date:</strong> ${new Date(report.timestamp).toLocaleString()}</p>
   </div>
 
   <div class="card">
-    <h2>🏥 Health Score</h2>
+    <h2>Health score</h2>
     <div class="health-score">${report.healthScore.overall}/100 [${report.healthScore.grade}]</div>
     <table>
       <tr><td>Architecture</td><td>${report.healthScore.architecture}/100</td></tr>
@@ -305,18 +422,18 @@ export class Reporter {
   </div>
 
   <div class="card">
-    <h2>📊 Key Metrics</h2>
-    <div class="metric"><span>Total Modules</span><strong>${report.metrics.totalModules}</strong></div>
-    <div class="metric"><span>Total Lines</span><strong>${report.metrics.totalLines.toLocaleString()}</strong></div>
-    <div class="metric"><span>Cyclomatic Complexity</span><strong>${report.metrics.cyclomaticComplexity}</strong></div>
+    <h2>Key metrics</h2>
+    <div class="metric"><span>Total modules</span><strong>${report.metrics.totalModules}</strong></div>
+    <div class="metric"><span>Total lines</span><strong>${report.metrics.totalLines.toLocaleString()}</strong></div>
+    <div class="metric"><span>Cyclomatic complexity</span><strong>${report.metrics.cyclomaticComplexity}</strong></div>
     <div class="metric"><span>Coupling</span><strong>${report.metrics.coupling}%</strong></div>
     <div class="metric"><span>Cohesion</span><strong>${report.metrics.cohesion}%</strong></div>
-    <div class="metric"><span>Test Coverage</span><strong>${report.metrics.testCoverage}%</strong></div>
-    <div class="metric"><span>Technical Debt</span><strong>${report.metrics.technicalDebt}%</strong></div>
+    <div class="metric"><span>Test coverage</span><strong>${report.metrics.testCoverage}%</strong></div>
+    <div class="metric"><span>Technical debt</span><strong>${report.metrics.technicalDebt}%</strong></div>
   </div>
 
   <div class="card">
-    <h2>🚦 Quality Gates</h2>
+    <h2>Quality gates</h2>
     <p><strong>Status:</strong> ${report.qualityGates.filter(g => g.passed).length}/${report.qualityGates.length} passed</p>
     <table>
       <tr><th>Gate</th><th>Threshold</th><th>Actual</th><th>Status</th></tr>
@@ -325,26 +442,26 @@ export class Reporter {
           <td>${gate.name}</td>
           <td>${gate.threshold}</td>
           <td>${gate.actual.toFixed(2)}</td>
-          <td class="${gate.passed ? 'pass' : 'fail'}">${gate.passed ? '✅ PASS' : '❌ FAIL'}</td>
+          <td class="${gate.passed ? 'pass' : 'fail'}">${gate.passed ? '✅ Pass' : '❌ Fail'}</td>
         </tr>
       `).join('')}
     </table>
   </div>
 
   <div class="card">
-    <h2>🚨 Issues (${report.antiPatterns.length})</h2>
+    <h2>Issues (${report.antiPatterns.length})</h2>
     ${report.antiPatterns.slice(0, 10).map(pattern => `
       <div style="margin: 15px 0;">
-        <span class="badge badge-${pattern.severity}">${pattern.severity.toUpperCase()}</span>
+        <span class="badge badge-${pattern.severity}">${pattern.severity}</span>
         <strong>${pattern.type}</strong> in ${pattern.module}
         <p>${pattern.description}</p>
-        ${pattern.suggestion ? `<p><em>💡 ${pattern.suggestion}</em></p>` : ''}
+        ${pattern.suggestion ? `<p><em>${pattern.suggestion}</em></p>` : ''}
       </div>
     `).join('')}
   </div>
 
   <div class="card">
-    <h2>💡 Top Refactoring Proposals</h2>
+    <h2>Top refactoring proposals</h2>
     ${report.proposals.slice(0, 5).map((proposal, i) => `
       <div class="proposal">
         <h3>${i + 1}. ${proposal.description}</h3>
@@ -358,5 +475,89 @@ export class Reporter {
   </div>
 </body>
 </html>`;
+  }
+
+  generateCSV(report: AnalysisReport): string {
+    let csv = 'Metric,Value\n';
+    
+    // Health scores
+    csv += `Health Score Overall,${report.healthScore.overall}\n`;
+    csv += `Health Score Grade,${report.healthScore.grade}\n`;
+    csv += `Health Score Architecture,${report.healthScore.architecture}\n`;
+    csv += `Health Score Maintainability,${report.healthScore.maintainability}\n`;
+    csv += `Health Score Testability,${report.healthScore.testability}\n`;
+    csv += `Health Score Security,${report.healthScore.security}\n`;
+    csv += `Health Score Performance,${report.healthScore.performance}\n`;
+    
+    // Basic metrics
+    csv += `Total Modules,${report.metrics.totalModules}\n`;
+    csv += `Total Lines,${report.metrics.totalLines}\n`;
+    csv += `Average Dependencies,${report.metrics.avgDependencies}\n`;
+    csv += `Max Dependencies,${report.metrics.maxDependencies}\n`;
+    csv += `Cyclomatic Complexity,${report.metrics.cyclomaticComplexity}\n`;
+    
+    // Quality metrics
+    csv += `Coupling,${report.metrics.coupling}\n`;
+    csv += `Cohesion,${report.metrics.cohesion}\n`;
+    csv += `Modularity,${report.metrics.modularity}\n`;
+    csv += `Maintainability Index,${report.metrics.maintainabilityIndex}\n`;
+    csv += `Instability,${report.metrics.instability}\n`;
+    csv += `Abstractness,${report.metrics.abstractness}\n`;
+    csv += `Distance From Main Sequence,${report.metrics.distanceFromMainSequence}\n`;
+    csv += `Test Coverage,${report.metrics.testCoverage}\n`;
+    csv += `Technical Debt,${report.metrics.technicalDebt}\n`;
+    csv += `Code Smells,${report.metrics.codeSmells}\n`;
+    
+    // Halstead metrics
+    if (report.metrics.halstead) {
+      csv += `Halstead Vocabulary,${report.metrics.halstead.vocabulary}\n`;
+      csv += `Halstead Length,${report.metrics.halstead.length}\n`;
+      csv += `Halstead Volume,${report.metrics.halstead.volume}\n`;
+      csv += `Halstead Difficulty,${report.metrics.halstead.difficulty}\n`;
+      csv += `Halstead Effort,${report.metrics.halstead.effort}\n`;
+      csv += `Halstead Time,${report.metrics.halstead.time}\n`;
+      csv += `Halstead Bugs,${report.metrics.halstead.bugs}\n`;
+    }
+    
+    // Cognitive complexity
+    if (report.metrics.cognitiveComplexity !== undefined) {
+      csv += `Cognitive Complexity,${report.metrics.cognitiveComplexity}\n`;
+    }
+    
+    // Quality gates
+    csv += `\nQuality Gate,Threshold,Actual,Status\n`;
+    report.qualityGates.forEach(gate => {
+      csv += `${gate.name},${gate.threshold},${gate.actual.toFixed(2)},${gate.passed ? 'Pass' : 'Fail'}\n`;
+    });
+    
+    // Issues summary
+    csv += `\nIssue Severity,Count\n`;
+    const severityCounts = {
+      critical: report.antiPatterns.filter(p => p.severity === 'critical').length,
+      high: report.antiPatterns.filter(p => p.severity === 'high').length,
+      medium: report.antiPatterns.filter(p => p.severity === 'medium').length,
+      low: report.antiPatterns.filter(p => p.severity === 'low').length
+    };
+    csv += `Critical,${severityCounts.critical}\n`;
+    csv += `High,${severityCounts.high}\n`;
+    csv += `Medium,${severityCounts.medium}\n`;
+    csv += `Low,${severityCounts.low}\n`;
+    csv += `Total Issues,${report.antiPatterns.length}\n`;
+    
+    // Proposals summary
+    csv += `\nProposal Priority,Count\n`;
+    const priorityCounts = {
+      critical: report.proposals.filter(p => p.priority === 'critical').length,
+      high: report.proposals.filter(p => p.priority === 'high').length,
+      medium: report.proposals.filter(p => p.priority === 'medium').length,
+      low: report.proposals.filter(p => p.priority === 'low').length
+    };
+    csv += `Critical,${priorityCounts.critical}\n`;
+    csv += `High,${priorityCounts.high}\n`;
+    csv += `Medium,${priorityCounts.medium}\n`;
+    csv += `Low,${priorityCounts.low}\n`;
+    csv += `Total Proposals,${report.proposals.length}\n`;
+    
+    return csv;
   }
 }

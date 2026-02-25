@@ -42,8 +42,21 @@ Professional automated software architecture optimization system. Analyzes your 
 - **JSON**: For CI/CD integration
 - **Markdown**: For documentation
 - **HTML**: Standalone visual report
+- **CSV**: Metrics export for spreadsheet analysis
 - **Diagrams**: Mermaid and DOT/Graphviz
 - **Trends**: Temporal comparison with previous reports
+
+### Output modes
+- **Normal**: Full detailed report with all sections
+- **Verbose**: Extended output with debug info and complete lists
+- **Summary**: Quick overview of key metrics only
+- **Quiet**: Minimal output showing only critical issues
+
+### Filtering and configuration
+- **Include/exclude patterns**: Filter files using glob patterns
+- **Configuration file**: Persistent settings via JSON config
+- **Customizable thresholds**: Set quality gate thresholds
+- **CI/CD integration**: Exit codes and quiet mode for automation
 
 ## Installation
 
@@ -64,37 +77,41 @@ auto-architect analyze
 ### Analyze command
 
 ```bash
-# Analyze current project
+# Basic analysis
 node dist/cli/index.js analyze
 
 # Analyze specific project
 node dist/cli/index.js analyze ./my-project
 
-# With security detection
-node dist/cli/index.js analyze --security
+# Output modes
+node dist/cli/index.js analyze --verbose      # Detailed output with debug info
+node dist/cli/index.js analyze --summary      # Quick overview only
+node dist/cli/index.js analyze --quiet        # Minimal output (critical issues only)
 
-# Compare with previous report
+# File filtering
+node dist/cli/index.js analyze --include "src/**/*.ts"
+node dist/cli/index.js analyze --exclude "**/*.test.ts"
+node dist/cli/index.js analyze --include "src/**" --exclude "**/*.spec.ts"
+
+# Configuration file
+node dist/cli/index.js analyze --config .autoarchitect.json
+
+# Export formats
+node dist/cli/index.js analyze --format json --output report.json
+node dist/cli/index.js analyze --format markdown --output report.md
+node dist/cli/index.js analyze --format html --output report.html
+node dist/cli/index.js analyze --format csv --output metrics.csv
+
+# Security and trends
+node dist/cli/index.js analyze --security
 node dist/cli/index.js analyze --compare report-old.json
 
-# Generate JSON report
-node dist/cli/index.js analyze --output report.json --format json
-
-# Generate Markdown report
-node dist/cli/index.js analyze --format markdown --output report.md
-
-# Generate HTML report
-node dist/cli/index.js analyze --format html --output report.html
-
-# Generate Mermaid diagram
+# Diagrams
 node dist/cli/index.js analyze --diagram mermaid
-
-# Generate DOT diagram (Graphviz)
 node dist/cli/index.js analyze --diagram dot
 
-# Set health score threshold (fail if below)
+# Quality gates
 node dist/cli/index.js analyze --threshold 80
-
-# Fail if critical issues detected
 node dist/cli/index.js analyze --fail-on-critical
 
 # Combine multiple options
@@ -130,6 +147,32 @@ node dist/cli/index.js watch --format json
 node dist/cli/index.js compare report1.json report2.json
 ```
 
+### Configuration file
+
+Create a `.autoarchitect.json` file in your project root:
+
+```json
+{
+  "threshold": 70,
+  "security": false,
+  "verbose": false,
+  "quiet": false,
+  "summary": false,
+  "include": "src/**/*.ts",
+  "exclude": "**/*.test.ts",
+  "format": "console",
+  "failOnCritical": false
+}
+```
+
+Then use it:
+
+```bash
+node dist/cli/index.js analyze --config .autoarchitect.json
+```
+
+CLI options override config file values.
+
 ### CI/CD integration
 
 ```bash
@@ -138,7 +181,8 @@ node dist/cli/index.js analyze \
   --format json \
   --output architecture-report.json \
   --threshold 70 \
-  --fail-on-critical
+  --fail-on-critical \
+  --quiet
 ```
 
 ## Example output

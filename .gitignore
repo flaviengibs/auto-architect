@@ -43,7 +43,8 @@ example-project-final.json
 *.temp
 .cache/
 
+# Configuration (user-specific)
+.autoarchitect.json
 
 # Useless files 
 DOC/
-
