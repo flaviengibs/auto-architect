@@ -6,7 +6,12 @@ Professional automated software architecture optimization system. Analyzes your 
 
 ### Comprehensive analysis
 - Advanced AST parsing - Extract functions, classes, exports, imports
-- Multi-language support - TypeScript, JavaScript, Python, Java, Go, C#, PHP, Ruby, Rust, Kotlin, Swift, C, C++, HTML, Visual Basic, R, SQL, Pascal (18 languages)
+- Multi-language support - 18 languages across multiple paradigms:
+  - Web: TypeScript, JavaScript, HTML
+  - Backend: Python, Java, Go, C#, PHP, Ruby, Rust, Kotlin, Swift
+  - Systems: C, C++, Pascal
+  - Data/Analytics: R, SQL
+  - Legacy: Visual Basic
 - Dependency graph - Bidirectional dependency analysis
 - Test detection - Automatic test file identification
 - Watch mode - Real-time analysis on file changes

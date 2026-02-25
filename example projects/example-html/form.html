@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="form-styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h1>User Registration</h1>
+        
+        <form id="registrationForm" method="post" action="/register">
+            <fieldset>
+                <legend>Personal Information</legend>
+                
+                <div class="form-row">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" name="firstName" required minlength="2">
+                </div>
+                
+                <div class="form-row">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName" required minlength="2">
+                </div>
+                
+                <div class="form-row">
+                    <label for="birthdate">Date of Birth:</label>
+                    <input type="date" id="birthdate" name="birthdate" required>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Account Information</legend>
+                
+                <div class="form-row">
+                    <label for="regUsername">Username:</label>
+                    <input type="text" id="regUsername" name="username" required pattern="[a-zA-Z0-9_]{3,20}">
+                </div>
+                
+                <div class="form-row">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="email" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="regPassword">Password:</label>
+                    <input type="password" id="regPassword" name="password" required minlength="8">
+                </div>
+                
+                <div class="form-row">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+            </fieldset>
+            
+            <div class="form-actions">
+                <button type="submit">Register</button>
+                <button type="reset">Clear Form</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="validation.js"></script>
+    <script>
+        function validateForm() {
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return false;
+            }
+            
+            if (!validatePasswordStrength(password)) {
+                alert('Password is too weak. Must contain uppercase, lowercase, digit, and special character.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validatePasswordStrength(password) {
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasDigit = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            
+            return hasUppercase && hasLowercase && hasDigit && hasSpecial;
+        }
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password && confirmPassword) {
+                if (password === confirmPassword) {
+                    document.getElementById('confirmPassword').style.borderColor = 'green';
+                } else {
+                    document.getElementById('confirmPassword').style.borderColor = 'red';
+                }
+            }
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+        document.getElementById('regPassword').addEventListener('input', checkPasswordMatch);
+    </script>
+</body>
+</html>

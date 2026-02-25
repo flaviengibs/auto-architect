@@ -9,6 +9,23 @@ All notable changes to Auto-Architect will be documented in this file.
 #### New language support (18 languages total)
 Added support for 12 additional programming languages across multiple paradigms:
 
+#### Example projects
+Created comprehensive example projects for all 12 new languages:
+- example-php/ (3 files: Database.php, Validator.php, User.php)
+- example-ruby/ (3 files: database.rb, validator.rb, user.rb)
+- example-rust/ (3 files: database.rs, validator.rs, user.rs)
+- example-kotlin/ (3 files: Database.kt, Validator.kt, User.kt)
+- example-swift/ (3 files: Database.swift, Validator.swift, User.swift)
+- example-c/ (4 files: database.h, database.c, utils.h, utils.c)
+- example-cpp/ (4 files: Database.hpp, Database.cpp, Validator.cpp, User.cpp)
+- example-html/ (3 files: index.html, form.html, dashboard.html)
+- example-vb/ (3 files: Database.vb, Validator.vb, User.vb)
+- example-r/ (3 files: database.R, validator.R, user.R)
+- example-sql/ (3 files: users.sql, analytics.sql, reports.sql)
+- example-pascal/ (3 files: Database.pas, Validator.pas, User.pas)
+
+Each example demonstrates real-world patterns including database operations, validation, user management, and complexity for parser testing.
+
 1. **PHP** (.php)
    - Function and class extraction
    - Use statement and require/include detection

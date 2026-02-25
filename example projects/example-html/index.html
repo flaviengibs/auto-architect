@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>User Management</h1>
+        
+        <form id="userForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit">Create User</button>
+        </form>
+        
+        <div id="userList">
+            <h2>Users</h2>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function validateUsername(username) {
+            if (username.length < 3 || username.length > 20) {
+                return false;
+            }
+            return /^[a-zA-Z0-9_]+$/.test(username);
+        }
+
+        function validatePassword(password) {
+            if (password.length < 8) {
+                return false;
+            }
+            
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasDigit = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            
+            const criteriaCount = [hasUppercase, hasLowercase, hasDigit, hasSpecial].filter(Boolean).length;
+            return criteriaCount >= 3;
+        }
+
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!validateUsername(username)) {
+                alert('Invalid username. Must be 3-20 characters and contain only letters, numbers, and underscores.');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                alert('Invalid email format.');
+                return;
+            }
+            
+            if (!validatePassword(password)) {
+                alert('Password must be at least 8 characters and contain at least 3 of: uppercase, lowercase, digit, special character.');
+                return;
+            }
+            
+            createUser(username, email, password);
+        });
+
+        function createUser(username, email, password) {
+            const user = {
+                id: Date.now(),
+                username: sanitizeInput(username),
+                email: sanitizeInput(email),
+                isActive: true
+            };
+            
+            addUserToTable(user);
+            document.getElementById('userForm').reset();
+        }
+
+        function addUserToTable(user) {
+            const tbody = document.querySelector('#usersTable tbody');
+            const row = tbody.insertRow();
+            
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.username}</td>
+                <td>${user.email}</td>
+                <td>${user.isActive ? 'Active' : 'Inactive'}</td>
+                <td>
+                    <button onclick="editUser(${user.id})">Edit</button>
+                    <button onclick="deleteUser(${user.id})">Delete</button>
+                </td>
+            `;
+        }
+
+        function editUser(id) {
+            console.log('Editing user:', id);
+        }
+
+        function deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                const row = event.target.closest('tr');
+                row.remove();
+            }
+        }
+    </script>
+</body>
+</html>

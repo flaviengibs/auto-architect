@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">User Management</div>
+        <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="form.html">Register</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h3>Menu</h3>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#users">Users</a></li>
+                <li><a href="#analytics">Analytics</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+        </aside>
+
+        <main class="dashboard-content">
+            <section id="overview">
+                <h2>Dashboard Overview</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <p class="stat-number" id="totalUsers">0</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Active Users</h3>
+                        <p class="stat-number" id="activeUsers">0</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>New Today</h3>
+                        <p class="stat-number" id="newToday">0</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Inactive</h3>
+                        <p class="stat-number" id="inactiveUsers">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="analytics">
+                <h2>User Analytics</h2>
+                <canvas id="userChart"></canvas>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function loadDashboardData() {
+            const stats = {
+                total: 1247,
+                active: 1089,
+                newToday: 23,
+                inactive: 158
+            };
+            
+            document.getElementById('totalUsers').textContent = stats.total;
+            document.getElementById('activeUsers').textContent = stats.active;
+            document.getElementById('newToday').textContent = stats.newToday;
+            document.getElementById('inactiveUsers').textContent = stats.inactive;
+            
+            renderChart();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('userChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'New Users',
+                        data: [65, 89, 120, 151, 180, 210],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'User Growth Over Time'
+                        }
+                    }
+                }
+            });
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function refreshData() {
+            loadDashboardData();
+        }
+
+        window.addEventListener('load', loadDashboardData);
+        setInterval(refreshData, 60000);
+    </script>
+</body>
+</html>
