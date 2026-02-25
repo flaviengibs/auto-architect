@@ -12,11 +12,11 @@ Complete documentation for Auto-Architect.
 ## Documentation structure
 
 ### Essential files (root)
-- **README_EN.md** - Main documentation (English version)
-- **CHANGELOG.md** - Version history
-- **TECHNICAL.md** - Technical documentation
-- **FEATURES.md** - Feature list and status
-- **LICENSE** - MIT License
+- [README.md](README_EN.md) - Main documentation (English version)
+- [CHANGELOG.md](CHANGELOG.md) - Version history
+- [TECHNICAL.md](TECHNICAL.md)  - Technical documentation
+- [FEATURES.md](FEATURES.md) - Feature list and status
+- [LICENSE](LICENSE.md) - MIT License
 
 ### Example projects
 - **example-project/** - TypeScript example with anti-patterns
@@ -33,12 +33,12 @@ Generated reports are excluded from git (see .gitignore):
 ## For different audiences
 
 ### For developers
-1. Read [README_EN.md](README_EN.md) for installation and usage
+1. Read [README.md](README.md) for installation and usage
 2. Check [FEATURES.md](FEATURES.md) for complete feature list
 3. Review [TECHNICAL.md](TECHNICAL.md) for architecture details
 
-### For recruiters
-1. Quick overview: [README_EN.md](README_EN.md) (5 min)
+### For recruiters (for hiring me :)
+1. Quick overview: [README.md](README.md) (5 min)
 2. Technical depth: [TECHNICAL.md](TECHNICAL.md) (10 min)
 3. Feature scope: [FEATURES.md](FEATURES.md) (5 min)
 
