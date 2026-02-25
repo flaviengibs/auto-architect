@@ -41,7 +41,17 @@ ARCHITECTURE.md
 complexity-heatmap.html
 architecture.mermaid
 architecture.dot
+refactoring-plan.md
+dashboard.html
 *.csv
+
+# Generated files with potential PII
+team-analytics.json
+.auto-architect-history.json
+.auto-architect-sessions.json
+
+# Plugin directory (user-specific)
+plugins/
 
 # Temporary files
 *.tmp

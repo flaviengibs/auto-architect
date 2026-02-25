@@ -1,6 +1,6 @@
 {
   "name": "auto-architect",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "Professional software architecture optimization system with multi-language support, security analysis, and real-time monitoring",
   "main": "dist/index.js",
   "bin": {
@@ -22,6 +22,8 @@
     "analyze:json": "node dist/cli/index.js analyze --format json --output report.json",
     "analyze:md": "node dist/cli/index.js analyze --format markdown --output report.md",
     "analyze:html": "node dist/cli/index.js analyze --format html --output report.html",
+    "analyze:full": "node dist/cli/index.js analyze --trends --compare-industry --refactoring-plan --team --dashboard",
+    "analyze:dashboard": "node dist/cli/index.js analyze --dashboard",
     "diagram": "node dist/cli/index.js analyze --diagram mermaid",
     "watch": "node dist/cli/index.js watch",
     "watch:threshold": "node dist/cli/index.js watch --threshold 80",

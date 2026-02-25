@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('auto-architect')
   .description('Automatic software architecture optimization system')
-  .version('1.0.0');
+  .version('3.2.0');
 
 program
   .command('analyze')
@@ -30,6 +30,12 @@ program
   .option('--git', 'Include Git history analysis')
   .option('--docs', 'Generate documentation')
   .option('--heatmap', 'Generate complexity heatmap')
+  .option('--trends', 'Track code quality trends over time')
+  .option('--compare-industry', 'Compare against industry benchmarks')
+  .option('--refactoring-plan', 'Generate smart refactoring plan')
+  .option('--team', 'Analyze team metrics and collaboration')
+  .option('--dashboard', 'Generate interactive HTML dashboard')
+  .option('--plugins <dir>', 'Load and execute plugins from directory')
   .option('--verbose', 'Show detailed analysis output with debug information')
   .option('--quiet', 'Only show critical issues and final score')
   .option('--summary', 'Show only summary without detailed breakdowns')
@@ -61,6 +67,12 @@ program
         includeGit: options.git ?? config.git ?? false,
         generateDocs: options.docs ?? config.docs ?? false,
         generateHeatmap: options.heatmap ?? config.heatmap ?? false,
+        includeTrends: options.trends ?? config.trends ?? false,
+        compareIndustry: options.compareIndustry ?? config.compareIndustry ?? false,
+        generateRefactoringPlan: options.refactoringPlan ?? config.refactoringPlan ?? false,
+        includeTeam: options.team ?? config.team ?? false,
+        generateDashboard: options.dashboard ?? config.dashboard ?? false,
+        pluginsDir: options.plugins ?? config.plugins,
         compareWith: options.compare ?? config.compareWith,
         includePattern: options.include ?? config.include,
         excludePattern: options.exclude ?? config.exclude,
@@ -80,6 +92,12 @@ program
           console.log(chalk.gray(`  - Git analysis: ${analysisOptions.includeGit}`));
           console.log(chalk.gray(`  - Generate docs: ${analysisOptions.generateDocs}`));
           console.log(chalk.gray(`  - Generate heatmap: ${analysisOptions.generateHeatmap}`));
+          console.log(chalk.gray(`  - Track trends: ${analysisOptions.includeTrends}`));
+          console.log(chalk.gray(`  - Compare industry: ${analysisOptions.compareIndustry}`));
+          console.log(chalk.gray(`  - Refactoring plan: ${analysisOptions.generateRefactoringPlan}`));
+          console.log(chalk.gray(`  - Team analytics: ${analysisOptions.includeTeam}`));
+          console.log(chalk.gray(`  - Dashboard: ${analysisOptions.generateDashboard}`));
+          console.log(chalk.gray(`  - Plugins: ${analysisOptions.pluginsDir || 'none'}`));
           console.log(chalk.gray(`  - Include pattern: ${analysisOptions.includePattern || 'all files'}`));
           console.log(chalk.gray(`  - Exclude pattern: ${analysisOptions.excludePattern || 'none'}`));
           console.log(chalk.gray(`  - Threshold: ${analysisOptions.threshold}\n`));
@@ -145,6 +163,143 @@ program
         heatmapGen.saveToFile(heatmapHTML, heatmapPath);
         if (!options.quiet) {
           console.log(chalk.green(`\n✓ Heatmap saved to ${heatmapPath}`));
+        }
+      }
+
+      // Track trends
+      if (analysisOptions.includeTrends) {
+        const { TrendTracker } = await import('../analyzer/trend-tracker');
+        const trendTracker = new TrendTracker();
+        const trendAnalysis = trendTracker.analyzeTrends(report);
+        report.trendAnalysis = trendAnalysis;
+        
+        if (!options.quiet) {
+          console.log(trendTracker.generateTrendReport(trendAnalysis));
+        }
+        
+        // Save to history
+        trendTracker.saveToHistory(report);
+      }
+
+      // Compare against industry benchmarks
+      if (analysisOptions.compareIndustry) {
+        const { ArchitectureComparator } = await import('../analyzer/architecture-comparator');
+        const comparator = new ArchitectureComparator();
+        const comparison = comparator.compare(report, 'web-app');
+        report.industryComparison = comparison;
+        
+        if (!options.quiet) {
+          console.log(chalk.cyan('\n🏆 Industry comparison\n'));
+          console.log(`Score: ${comparison.score}/100 (Grade: ${comparison.grade})`);
+          console.log(`Percentile: ${comparison.percentile}th`);
+          
+          if (comparison.strengths.length > 0) {
+            console.log(`\nStrengths:`);
+            comparison.strengths.slice(0, 3).forEach(s => console.log(`  ✓ ${s}`));
+          }
+          
+          if (comparison.weaknesses.length > 0) {
+            console.log(`\nWeaknesses:`);
+            comparison.weaknesses.slice(0, 3).forEach(w => console.log(`  ✗ ${w}`));
+          }
+        }
+      }
+
+      // Generate refactoring plan
+      if (analysisOptions.generateRefactoringPlan) {
+        const { SmartRefactoringAssistant } = await import('../optimizer/smart-refactoring');
+        const assistant = new SmartRefactoringAssistant();
+        const plan = assistant.generateRefactoringPlan(report.proposals, report.metrics);
+        report.refactoringPlan = plan;
+        
+        if (!options.quiet) {
+          console.log(chalk.cyan('\n🔧 Smart refactoring plan\n'));
+          console.log(`Total effort: ${plan.estimatedTotalEffort} hours`);
+          console.log(`Expected health score gain: +${plan.expectedImpact.healthScoreGain}`);
+          console.log(`Phases: ${plan.phases.length}`);
+          console.log(`Risks: ${plan.risks.length}`);
+        }
+        
+        // Save plan to file
+        const planPath = 'refactoring-plan.md';
+        assistant.savePlan(plan, planPath);
+        if (!options.quiet) {
+          console.log(chalk.green(`\n✓ Refactoring plan saved to ${planPath}`));
+        }
+      }
+
+      // Team analytics
+      if (analysisOptions.includeTeam) {
+        const { TeamAnalytics } = await import('../analyzer/team-analytics');
+        const teamAnalytics = new TeamAnalytics(fullPath);
+        const teamMetrics = teamAnalytics.analyze(report.graph);
+        report.teamMetrics = teamMetrics;
+        
+        if (!options.quiet) {
+          console.log(teamAnalytics.generateReport(teamMetrics));
+        }
+        
+        // Export team metrics
+        const teamPath = 'team-analytics.json';
+        teamAnalytics.exportMetrics(teamMetrics, teamPath);
+        if (!options.quiet) {
+          console.log(chalk.green(`\n✓ Team analytics saved to ${teamPath}`));
+        }
+      }
+
+      // Plugin system
+      let pluginResults: Map<string, any> | undefined;
+      if (analysisOptions.pluginsDir) {
+        const { PluginManager } = await import('../plugin/plugin-system');
+        const pluginManager = new PluginManager(analysisOptions.pluginsDir);
+        
+        if (!options.quiet) {
+          console.log(chalk.cyan('\n🔌 Loading plugins\n'));
+        }
+        
+        await pluginManager.loadPlugins();
+        
+        // Execute lifecycle hooks
+        const context = {
+          report,
+          graph: report.graph,
+          projectPath: fullPath,
+          config: config
+        };
+        
+        await pluginManager.executeHook('onBeforeAnalysis', context);
+        
+        // Run custom analyzers
+        pluginResults = await pluginManager.runCustomAnalyzers(context);
+        
+        // Collect and apply custom rules
+        const customRules = pluginManager.collectCustomRules();
+        if (customRules.length > 0 && !options.quiet) {
+          console.log(chalk.cyan(`\n✓ Loaded ${customRules.length} custom rules from plugins`));
+        }
+        
+        await pluginManager.executeHook('onAfterAnalysis', context);
+      }
+
+      // Generate dashboard
+      if (analysisOptions.generateDashboard) {
+        const { DashboardGenerator } = await import('../dashboard/dashboard-generator');
+        const dashboardGen = new DashboardGenerator();
+        
+        const dashboardData = {
+          report,
+          trends: report.trendAnalysis,
+          comparison: report.industryComparison,
+          teamAnalytics: report.teamMetrics,
+          pluginResults
+        };
+        
+        const dashboardHTML = dashboardGen.generateDashboard(dashboardData);
+        const dashboardPath = 'dashboard.html';
+        dashboardGen.saveDashboard(dashboardHTML, dashboardPath);
+        
+        if (!options.quiet) {
+          console.log(chalk.green(`\n✓ Dashboard saved to ${dashboardPath}`));
         }
       }
 

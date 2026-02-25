@@ -2,6 +2,154 @@
 
 All notable changes to Auto-Architect will be documented in this file.
 
+## [3.2.0] - 2026-02-25
+
+### New features: Advanced analysis and team collaboration
+
+#### Feature 1: Plugin system
+- Extensible plugin architecture for custom analyzers and rules
+- Plugin lifecycle hooks (onInit, onBeforeAnalysis, onAfterAnalysis, onModuleParsed, onReportGenerated)
+- Custom rule definition with severity levels
+- Plugin manager for loading, registering, and executing plugins
+- Example plugin template included
+- Supports custom analyzers and metrics
+
+#### Feature 2: Code quality trends
+- Historical tracking of metrics over time
+- Trend analysis with direction indicators (improving/stable/degrading)
+- Predictions using linear regression (30-day forecasts)
+- Automated alerts for declining quality
+- Tracks health score, complexity, coupling, test coverage, technical debt
+- Saves history to .auto-architect-history.json
+- Use with `--trends` flag
+
+#### Feature 3: Real-time collaboration
+- Collaboration sessions for team code reviews
+- Comment system with replies and status tracking
+- Participant management with roles (owner/reviewer/viewer)
+- Report sharing within sessions
+- Notification support (Slack, Teams, Email)
+- Session export as markdown reports
+- Saves sessions to .auto-architect-sessions.json
+
+#### Feature 4: Architecture comparison
+- Compare against industry benchmarks
+- Support for multiple project types (web-app, api, library, cli, mobile, microservice)
+- Percentile ranking against similar projects
+- Identifies strengths and weaknesses
+- Generates actionable recommendations
+- Comparison across 7 key metrics
+- Use with `--compare-industry` flag
+
+#### Feature 5: Smart refactoring assistant
+- Generates comprehensive refactoring plans
+- Prioritizes proposals using weighted scoring
+- Creates phased implementation roadmap
+- Risk identification and mitigation strategies
+- Effort estimation and impact calculation
+- Quick wins identification (low effort, high impact)
+- Safety validation before refactoring
+- Exports plans as markdown
+- Use with `--refactoring-plan` flag
+
+#### Feature 6: Team analytics
+- Contributor statistics and activity levels
+- Module ownership analysis
+- Collaboration metrics and pair programming scores
+- Productivity tracking (commits/day, velocity trends)
+- Code review metrics
+- Knowledge distribution and bus factor calculation
+- Cross-training recommendations
+- Expertise gap identification
+- Use with `--team` flag
+
+#### Feature 7: Interactive dashboard
+- Visual HTML dashboard with Chart.js integration
+- Real-time metrics visualization with interactive charts
+- Trend graphs and 30-day predictions
+- Industry comparison display with tables
+- Issue tracking by severity with color coding
+- Responsive design with tabbed interface
+- Radar, bar, doughnut, and line charts
+- Dark theme with gradient background
+- Use with `--dashboard` flag
+
+#### CLI enhancements
+- New flags:
+  - `--trends`: Track code quality trends over time
+  - `--compare-industry`: Compare against industry benchmarks
+  - `--refactoring-plan`: Generate smart refactoring plan
+  - `--team`: Analyze team metrics and collaboration
+  - `--dashboard`: Generate interactive HTML dashboard
+  - `--plugins <dir>`: Load and execute custom plugins
+- All features can be combined in single analysis
+- Configuration file support for all new options
+
+#### Technical implementation
+- Created PluginManager class (src/plugin/plugin-system.ts)
+- Created TrendTracker class (src/analyzer/trend-tracker.ts)
+- Created CollaborationManager class (src/collaboration/collaboration-server.ts)
+- Created ArchitectureComparator class (src/analyzer/architecture-comparator.ts)
+- Created SmartRefactoringAssistant class (src/optimizer/smart-refactoring.ts)
+- Created TeamAnalytics class (src/analyzer/team-analytics.ts)
+- Created DashboardGenerator class (src/dashboard/dashboard-generator.ts)
+- Updated types.ts with new interfaces (ComparisonResult)
+- Updated CLI with new options and plugin integration
+- Integrated all analyzers into main workflow
+- Updated package.json to v3.2.0
+- Added new npm scripts: analyze:full, analyze:dashboard
+
+#### Usage examples
+```bash
+# Full analysis with all new features
+auto-architect analyze --trends --compare-industry --refactoring-plan --team
+
+# Track trends over time
+auto-architect analyze --trends
+
+# Compare with industry
+auto-architect analyze --compare-industry
+
+# Generate refactoring plan
+auto-architect analyze --refactoring-plan
+
+# Team analytics
+auto-architect analyze --team
+
+# Interactive dashboard
+auto-architect analyze --dashboard
+
+# Load custom plugins
+auto-architect analyze --plugins ./plugins
+
+# Combined with existing features
+auto-architect analyze --security --performance --git --trends --team --dashboard
+```
+
+#### Impact
+- Comprehensive team collaboration features
+- Historical trend analysis and predictions
+- Industry benchmarking capabilities
+- Intelligent refactoring guidance
+- Team productivity insights
+- Extensible plugin system
+- Interactive visual dashboard
+- Better decision-making with data-driven insights
+auto-architect analyze --team
+
+# Combined with existing features
+auto-architect analyze --security --performance --git --trends --team
+```
+
+#### Impact
+- Comprehensive team collaboration features
+- Historical trend analysis and predictions
+- Industry benchmarking capabilities
+- Intelligent refactoring guidance
+- Team productivity insights
+- Extensible plugin system
+- Better decision-making with data-driven insights
+
 ## [3.1.1] - 2026-02-25
 
 ### Code quality improvements

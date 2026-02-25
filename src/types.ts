@@ -168,6 +168,10 @@ export interface AnalysisReport {
   trends?: TrendAnalysis;
   performance?: any;
   git?: any;
+  trendAnalysis?: any;
+  industryComparison?: any;
+  refactoringPlan?: any;
+  teamMetrics?: any;
 }
 
 export interface HealthScore {
@@ -193,4 +197,19 @@ export interface TrendAnalysis {
   improvements: string[];
   regressions: string[];
   metricsChange: Record<string, number>;
+}
+
+export interface ComparisonResult {
+  score: number;
+  grade: string;
+  percentile: number;
+  comparison: Array<{
+    metric: string;
+    yourValue: number;
+    industryAverage: number;
+    status: 'above' | 'at' | 'below';
+  }>;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
 }
