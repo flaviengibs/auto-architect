@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto-Architect - Web Interface</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <h1>🏗️ Auto-Architect</h1>
+        <p>Professional software architecture analysis</p>
+      </div>
+      <div class="version">v3.2.0</div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Upload Section -->
+      <section class="upload-section" id="uploadSection">
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">📁</div>
+          <h2>Drop your project files here</h2>
+          <p>or click to browse</p>
+          <input type="file" id="fileInput" multiple webkitdirectory directory />
+          <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
+            Select project folder
+          </button>
+          <p style="margin-top: 10px; font-size: 0.9em; color: #718096;">
+            Or select individual files if folder selection doesn't work
+          </p>
+          <button class="btn-secondary" onclick="selectIndividualFiles()" style="margin-top: 10px;">
+            Select individual files
+          </button>
+          <div class="supported-formats">
+            <p>Supported: TypeScript, JavaScript, Python, Java, Go, C#, PHP, Ruby, Rust, Kotlin, Swift, C, C++, HTML, VB, R, SQL, Pascal</p>
+          </div>
+        </div>
+
+        <!-- File List -->
+        <div class="file-list" id="fileList" style="display: none;">
+          <h3>Selected Files (<span id="fileCount">0</span>)</h3>
+          <div id="fileListContent"></div>
+          <button class="btn-secondary" onclick="clearFiles()">Clear All</button>
+        </div>
+      </section>
+
+      <!-- Options Section -->
+      <section class="options-section" id="optionsSection" style="display: none;">
+        <h2>Analysis options</h2>
+        
+        <div class="options-grid">
+          <!-- Basic Options -->
+          <div class="option-group">
+            <h3>Basic analysis</h3>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optBasic" checked disabled>
+              <span>Architecture metrics</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optAntiPatterns" checked disabled>
+              <span>Anti-pattern detection</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optRefactoring" checked disabled>
+              <span>Refactoring proposals</span>
+            </label>
+          </div>
+
+          <!-- Advanced Options -->
+          <div class="option-group">
+            <h3>Advanced features</h3>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optSecurity">
+              <span>Security analysis</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optPerformance">
+              <span>Performance analysis</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optGit">
+              <span>Git history analysis</span>
+            </label>
+          </div>
+
+          <!-- Generation Options -->
+          <div class="option-group">
+            <h3>Generate</h3>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optDocs">
+              <span>Documentation</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optHeatmap">
+              <span>Complexity heatmap</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optDiagram">
+              <span>Architecture diagram</span>
+            </label>
+          </div>
+
+          <!-- Team & Trends -->
+          <div class="option-group">
+            <h3>Team & Trends</h3>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optTrends">
+              <span>Quality trends</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optTeam">
+              <span>Team analytics</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optCompare">
+              <span>Industry comparison</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optRefactoringPlan">
+              <span>Refactoring plan</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Threshold Settings -->
+        <div class="threshold-settings">
+          <h3>Quality thresholds</h3>
+          <div class="threshold-group">
+            <label>
+              Minimum health score:
+              <input type="range" id="thresholdHealth" min="0" max="100" value="70" oninput="updateThresholdValue('health', this.value)">
+              <span id="thresholdHealthValue">70</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn-primary btn-large" onclick="startAnalysis()">
+            🚀 Start analysis
+          </button>
+          <button class="btn-secondary" onclick="resetOptions()">
+            Reset options
+          </button>
+        </div>
+      </section>
+
+      <!-- Progress Section -->
+      <section class="progress-section" id="progressSection" style="display: none;">
+        <h2>Analyzing Project...</h2>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-text" id="progressText">Initializing...</p>
+        <div class="progress-steps" id="progressSteps"></div>
+      </section>
+
+      <!-- Results Section -->
+      <section class="results-section" id="resultsSection" style="display: none;">
+        <div class="demo-warning" id="analysisModeBanner" style="display: none;"></div>
+        
+        <h2>Analysis results</h2>
+        
+        <!-- Health Score Card -->
+        <div class="health-card">
+          <div class="health-score">
+            <div class="score-circle" id="scoreCircle">
+              <span class="score-value" id="scoreValue">--</span>
+              <span class="score-label">Health Score</span>
+            </div>
+            <div class="grade-badge" id="gradeBadge">-</div>
+          </div>
+          <div class="health-details" id="healthDetails"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" onclick="showTab('overview')">Overview</button>
+          <button class="tab" onclick="showTab('metrics')">Metrics</button>
+          <button class="tab" onclick="showTab('issues')">Issues</button>
+          <button class="tab" onclick="showTab('refactoring')">Refactoring</button>
+          <button class="tab" onclick="showTab('visualizations')">Visualizations</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <div id="overviewTab" class="tab-pane active"></div>
+          <div id="metricsTab" class="tab-pane"></div>
+          <div id="issuesTab" class="tab-pane"></div>
+          <div id="refactoringTab" class="tab-pane"></div>
+          <div id="visualizationsTab" class="tab-pane"></div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="export-section">
+          <h3>Export results</h3>
+          <div class="export-buttons">
+            <button class="btn-export" onclick="exportResults('json')">📄 JSON</button>
+            <button class="btn-export" onclick="exportResults('html')">🌐 HTML</button>
+            <button class="btn-export" onclick="exportResults('markdown')">📝 Markdown</button>
+            <button class="btn-export" onclick="exportResults('csv')">📊 CSV</button>
+          </div>
+        </div>
+
+        <!-- New Analysis Button -->
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="startNewAnalysis()">
+            🔄 New analysis
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Auto-Architect v3.2.0 | 18 languages supported | Open source</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

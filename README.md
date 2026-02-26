@@ -46,6 +46,62 @@ Professional automated software architecture optimization system. Analyzes your 
 - HTML and SVG formats
 - Responsive design with tooltips
 
+### Plugin system
+- Extensible plugin architecture
+- Custom analyzers and rules
+- Lifecycle hooks for integration
+- Plugin manager for loading and execution
+- Example plugin template included
+
+### Code quality trends
+- Historical tracking of metrics over time
+- Trend analysis with predictions
+- Automated quality alerts
+- 30-day forecasts using linear regression
+- Tracks health score, complexity, coupling, coverage, debt
+
+### Real-time collaboration
+- Team code review sessions
+- Comment system with replies
+- Participant management with roles
+- Report sharing and notifications
+- Slack, Teams, and Email integration
+- Session export as markdown
+
+### Architecture comparison
+- Compare against industry benchmarks
+- Percentile ranking
+- Identifies strengths and weaknesses
+- Actionable recommendations
+- Support for multiple project types
+
+### Smart refactoring assistant
+- Comprehensive refactoring plans
+- Prioritized proposals with weighted scoring
+- Phased implementation roadmap
+- Risk identification and mitigation
+- Effort estimation and impact calculation
+- Quick wins identification
+- Safety validation
+
+### Team analytics
+- Contributor statistics and activity levels
+- Module ownership analysis
+- Collaboration and productivity metrics
+- Code review metrics
+- Knowledge distribution and bus factor
+- Cross-training recommendations
+- Expertise gap identification
+
+### Interactive dashboard
+- Visual HTML dashboard with charts
+- Real-time metrics visualization
+- Trend graphs and predictions
+- Industry comparison display
+- Issue tracking and severity breakdown
+- Responsive design with tabs
+- Chart.js integration for interactive charts
+
 ### Architecture metrics (30+)
 - **Basic**: Modules, lines, dependencies, cyclomatic complexity
 - **Quality**: Coupling, cohesion, modularity, maintainability index
@@ -105,6 +161,8 @@ Professional automated software architecture optimization system. Analyzes your 
 
 ## Installation
 
+### CLI Installation
+
 ```bash
 npm install
 npm run build
@@ -116,6 +174,25 @@ node dist/cli/index.js analyze
 npm link
 auto-architect analyze
 ```
+
+### Web Interface
+
+For a visual, drag-and-drop interface:
+
+```bash
+# Navigate to web directory
+cd web
+
+# Install dependencies
+npm install
+
+# Start the web server
+npm start
+
+# Open browser to http://localhost:3000
+```
+
+See `web/README.md` for detailed web interface documentation.
 
 ## Usage
 
@@ -152,6 +229,26 @@ node dist/cli/index.js analyze --performance      # Performance analysis
 node dist/cli/index.js analyze --git              # Git history analysis
 node dist/cli/index.js analyze --docs             # Generate documentation
 node dist/cli/index.js analyze --heatmap          # Complexity heatmap
+node dist/cli/index.js analyze --trends           # Track quality trends
+node dist/cli/index.js analyze --compare-industry # Compare with industry
+node dist/cli/index.js analyze --refactoring-plan # Generate refactoring plan
+node dist/cli/index.js analyze --team             # Team analytics
+node dist/cli/index.js analyze --dashboard        # Interactive HTML dashboard
+node dist/cli/index.js analyze --plugins ./plugins # Load custom plugins
+
+# Full analysis with all features
+node dist/cli/index.js analyze \
+  --security \
+  --performance \
+  --git \
+  --docs \
+  --heatmap \
+  --trends \
+  --compare-industry \
+  --refactoring-plan \
+  --team \
+  --dashboard \
+  --plugins ./plugins
 
 # Security and trends
 node dist/cli/index.js analyze --security
@@ -172,6 +269,10 @@ node dist/cli/index.js analyze \
   --git \
   --docs \
   --heatmap \
+  --trends \
+  --compare-industry \
+  --refactoring-plan \
+  --team \
   --compare previous-report.json \
   --format html \
   --output report.html \
@@ -209,7 +310,15 @@ Create a `.autoarchitect.json` file in your project root:
 ```json
 {
   "threshold": 70,
-  "security": false,
+  "security": true,
+  "performance": true,
+  "git": true,
+  "docs": false,
+  "heatmap": false,
+  "trends": true,
+  "compareIndustry": true,
+  "refactoringPlan": true,
+  "team": true,
   "verbose": false,
   "quiet": false,
   "summary": false,
@@ -438,3 +547,4 @@ MIT
 ## Contributing
 
 Contributions are welcome! This project demonstrates senior/staff engineer level skills.
+(ironically, this project has been cleaned with the project analysis itself, but as analysers are complex and parsers have a common structure (it looks a bit like duplicated code), i haven't been able to get a higher Health score than 28... deserved ? ;)

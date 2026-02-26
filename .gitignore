@@ -53,6 +53,10 @@ team-analytics.json
 # Plugin directory (user-specific)
 plugins/
 
+# Web interface uploads
+web/uploads/
+web/node_modules/
+
 # Temporary files
 *.tmp
 *.temp

@@ -371,20 +371,28 @@ program
       // Check thresholds
       const threshold = analysisOptions.threshold;
       if (report.healthScore.overall < threshold) {
-        if (!options.quiet) {
+        if (!options.quiet && options.format !== 'json') {
           console.log(chalk.red(`\n❌ Health score ${report.healthScore.overall} is below threshold ${threshold}`));
         }
-        process.exit(1);
+        // Ensure stdout is flushed before exiting
+        process.stdout.write('', () => {
+          process.exit(1);
+        });
+        return;
       }
 
       // Check for critical issues
       if (options.failOnCritical) {
         const criticalIssues = report.antiPatterns.filter(p => p.severity === 'critical');
         if (criticalIssues.length > 0) {
-          if (!options.quiet) {
+          if (!options.quiet && options.format !== 'json') {
             console.log(chalk.red(`\n❌ Found ${criticalIssues.length} critical issues`));
           }
-          process.exit(1);
+          // Ensure stdout is flushed before exiting
+          process.stdout.write('', () => {
+            process.exit(1);
+          });
+          return;
         }
       }
 

@@ -74,6 +74,17 @@ All notable changes to Auto-Architect will be documented in this file.
 - Dark theme with gradient background
 - Use with `--dashboard` flag
 
+#### Feature 8: Web interface
+- Modern drag-and-drop web application
+- Upload projects directly in browser
+- Interactive options configuration
+- Real-time progress visualization
+- Beautiful results display with tabs
+- Export in multiple formats
+- Responsive design for all devices
+- Optional backend server for real analysis
+- Located in `web/` directory
+
 #### CLI enhancements
 - New flags:
   - `--trends`: Track code quality trends over time
