@@ -1,18 +1,18 @@
-# Backend Setup Guide
+# Backend setup guide
 
-Complete guide to set up the Auto-Architect web backend for real analysis.
+Complete guide to set up the Auto-architect web backend for real analysis.
 
 ## Prerequisites
 
 - Node.js 16+ installed
 - npm installed
-- Auto-Architect project cloned
+- Auto-architect project cloned
 
-## Step-by-Step Setup
+## Step-by-step setup
 
 ### 1. Build the CLI (from root directory)
 
-First, you need to build the Auto-Architect CLI:
+First, you need to build the Auto-architect CLI:
 
 ```bash
 # Navigate to project root (parent of web/ directory)
@@ -28,7 +28,7 @@ npm run build
 ls dist/cli/index.js  # Should exist
 ```
 
-### 2. Install Web Dependencies
+### 2. Install web dependencies
 
 ```bash
 # Navigate to web directory
@@ -38,7 +38,7 @@ cd web
 npm install
 ```
 
-### 3. Test Setup
+### 3. Test setup
 
 ```bash
 # Run test script
@@ -47,10 +47,10 @@ npm test
 
 You should see:
 ```
-✅ All checks passed! You can now run: npm start
+All checks passed! You can now run: npm start
 ```
 
-### 4. Start Server
+### 4. Start server
 
 ```bash
 npm start
@@ -60,7 +60,7 @@ You should see:
 ```
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
-║   🏗️  Auto-Architect Web Server                      ║
+║   Auto-architect web server                          ║
 ║                                                       ║
 ║   Server running on: http://localhost:3000           ║
 ║   Version: 3.2.0                                      ║
@@ -70,23 +70,23 @@ You should see:
 ╚═══════════════════════════════════════════════════════╝
 ```
 
-### 5. Open Browser
+### 5. Open browser
 
 Open http://localhost:3000 in your browser.
 
-### 6. Upload and Analyze
+### 6. Upload and analyze
 
 1. Drag and drop your project folder
 2. Select analysis options
-3. Click "Start Analysis"
+3. Click "Start analysis"
 4. Wait for real analysis to complete
-5. View results (should show "✅ Real Analysis" banner)
+5. View results (should show "Real analysis" banner)
 
 ## Troubleshooting
 
 ### Error: "CLI not found"
 
-**Problem:** The Auto-Architect CLI hasn't been built.
+**Problem:** The Auto-architect CLI hasn't been built.
 
 **Solution:**
 ```bash
@@ -113,8 +113,8 @@ npm start
 
 **Solution:**
 ```bash
-# Option 1: Stop other process using port 3000
-# Option 2: Use different port
+# Option 1: stop other process using port 3000
+# Option 2: use different port
 PORT=3001 npm start
 ```
 
@@ -129,7 +129,7 @@ Then open http://localhost:3001
 2. Is the project too large? (Try smaller subset)
 3. Check server console for error details
 
-### Still Shows "Demo Mode"
+### Still shows "Demo mode"
 
 **Problem:** Frontend can't connect to backend.
 
@@ -139,7 +139,7 @@ Then open http://localhost:3001
 3. Open browser console (F12) - any errors?
 4. Try: http://localhost:3000/api/health (should return `{"status":"ok"}`)
 
-## Verification Checklist
+## Verification checklist
 
 Before reporting issues, verify:
 
@@ -151,7 +151,7 @@ Before reporting issues, verify:
 - [ ] Browser on http://localhost:3000
 - [ ] No console errors (F12 in browser)
 
-## Development Mode
+## Development mode
 
 For development with auto-reload:
 
@@ -161,7 +161,7 @@ npm run dev
 
 This uses nodemon to restart server on file changes.
 
-## Production Deployment
+## Production deployment
 
 For production deployment:
 
@@ -194,10 +194,10 @@ For production deployment:
 ## Architecture
 
 ```
-Root Directory/
+Root directory/
 ├── dist/
 │   └── cli/
-│       └── index.js          ← Auto-Architect CLI (built)
+│       └── index.js          ← Auto-architect CLI (built)
 ├── src/                      ← Source code
 ├── web/
 │   ├── node_modules/         ← Web dependencies
@@ -209,7 +209,7 @@ Root Directory/
 └── package.json              ← Root dependencies
 ```
 
-## How It Works
+## How it works
 
 1. **Upload:** Browser sends files to `/api/analyze`
 2. **Save:** Server saves files to `uploads/[timestamp]/`
@@ -218,7 +218,7 @@ Root Directory/
 5. **Cleanup:** Server deletes uploaded files
 6. **Display:** Browser shows real analysis results
 
-## Security Notes
+## Security notes
 
 - Files are saved temporarily and deleted after analysis
 - No files are stored permanently

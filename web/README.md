@@ -1,19 +1,19 @@
-# Auto-Architect Web Interface
+# Auto-architect web interface
 
-A modern, drag-and-drop web interface for Auto-Architect that allows you to analyze projects directly in your browser.
+A modern, drag-and-drop web interface for Auto-architect that allows you to analyze projects directly in your browser.
 
 ## Features
 
-- 🎯 Drag & drop project folders
-- 📊 Interactive analysis options
-- 📈 Real-time progress tracking
-- 🎨 Beautiful visual results
-- 📥 Export in multiple formats (JSON, HTML, Markdown, CSV)
-- 📱 Responsive design
+- Drag & drop project folders
+- Interactive analysis options
+- Real-time progress tracking
+- Beautiful visual results
+- Export in multiple formats (JSON, HTML, Markdown, CSV)
+- Responsive design
 
-## Quick Start
+## Quick start
 
-### Option 1: Open directly in browser (Demo Mode)
+### Option 1: open directly in browser (demo mode)
 
 Simply open `index.html` in your web browser:
 
@@ -28,9 +28,9 @@ open index.html
 xdg-open index.html
 ```
 
-**⚠️ This runs in DEMO MODE with simulated results!**
+**⚠️ This runs in demo mode with simulated results!**
 
-### Option 2: Run with backend (Real Analysis)
+### Option 2: run with backend (real analysis)
 
 For real analysis of your code:
 
@@ -58,18 +58,18 @@ npm start
 # Go to http://localhost:3000
 ```
 
-**✅ This will perform REAL analysis!**
+**✅ This will perform real analysis!**
 
 See `SETUP.md` for detailed setup instructions and troubleshooting.
 
-## How to Use
+## How to use
 
-1. **Upload Project**
+1. **Upload project**
    - Drag and drop your project folder onto the upload area
-   - Or click "Select Project Folder" to browse
+   - Or click "Select project folder" to browse
    - Supported: 18 programming languages
 
-2. **Configure Options**
+2. **Configure options**
    - Select analysis features you want:
      - Security analysis
      - Performance analysis
@@ -83,18 +83,18 @@ See `SETUP.md` for detailed setup instructions and troubleshooting.
    - Adjust quality thresholds
 
 3. **Analyze**
-   - Click "Start Analysis"
+   - Click "Start analysis"
    - Watch real-time progress
    - View results in interactive tabs
 
-4. **Export Results**
+4. **Export results**
    - Download reports in your preferred format
    - JSON for programmatic access
    - HTML for sharing
    - Markdown for documentation
    - CSV for spreadsheet analysis
 
-## Supported Languages
+## Supported languages
 
 - TypeScript (.ts, .tsx)
 - JavaScript (.js, .jsx)
@@ -115,16 +115,16 @@ See `SETUP.md` for detailed setup instructions and troubleshooting.
 - SQL (.sql)
 - Pascal (.pas, .pp)
 
-## Current Implementation
+## Current implementation
 
 **Note:** This is a frontend-only demo by default. The current version:
-- ✅ Full UI/UX implementation
-- ✅ File upload and processing
-- ✅ Options configuration
-- ✅ Progress visualization
-- ✅ Results display
-- ✅ Export functionality
-- ⚠️ **Uses simulated analysis data in demo mode**
+- Full UI/UX implementation
+- File upload and processing
+- Options configuration
+- Progress visualization
+- Results display
+- Export functionality
+- Uses simulated analysis data in demo mode
 
 **Important:** When you open `index.html` directly without the backend server:
 - Results are **simulated/mock data** for demonstration
@@ -134,42 +134,42 @@ See `SETUP.md` for detailed setup instructions and troubleshooting.
 
 **For real analysis:** Run the backend server (see below)
 
-## Full Implementation (Backend Required)
+## Full implementation (backend required)
 
-To connect this to the actual Auto-Architect engine, you need:
+To connect this to the actual Auto-architect engine, you need:
 
-1. **Backend API Server**
+1. **Backend API server**
    - Node.js/Express server
    - Receives uploaded files
-   - Runs Auto-Architect CLI
+   - Runs Auto-architect CLI
    - Returns analysis results
 
-2. **File Processing**
+2. **File processing**
    - Save uploaded files temporarily
    - Run analysis with selected options
    - Stream progress updates
    - Return results as JSON
 
-3. **WebSocket Support** (optional)
+3. **WebSocket support** (optional)
    - Real-time progress updates
    - Live collaboration features
 
-## Backend Integration Example
+## Backend integration example
 
 See `server.js` for a complete backend implementation that:
 - Accepts file uploads
-- Runs Auto-Architect analysis
+- Runs Auto-architect analysis
 - Streams progress updates
 - Returns results
 
-## Browser Compatibility
+## Browser compatibility
 
-- Chrome/Edge: ✅ Full support
-- Firefox: ✅ Full support
-- Safari: ✅ Full support
-- Mobile browsers: ✅ Responsive design
+- Chrome/Edge: full support
+- Firefox: full support
+- Safari: full support
+- Mobile browsers: responsive design
 
-## Security Notes
+## Security notes
 
 - Files are processed client-side (in demo mode)
 - No data is sent to external servers
@@ -192,7 +192,7 @@ Edit `app.js` to:
 - Add new export formats
 - Integrate with backend API
 
-## Future Enhancements
+## Future enhancements
 
 - [ ] Real backend integration
 - [ ] WebSocket for live updates
@@ -205,4 +205,4 @@ Edit `app.js` to:
 
 ## License
 
-Same as Auto-Architect main project (MIT)
+Same as Auto-architect main project (MIT)
